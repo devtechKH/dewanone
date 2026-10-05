@@ -216,9 +216,9 @@ body{font-family:'Inter',sans-serif;background:#F8FAF6}
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
+<script type="module">
 // --- Supabase Setup ---
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
 // GANTI dengan project kamu
 const SUPABASE_URL = localStorage.getItem('dewanone_supabase_url') || 'https://xlnvsulgvoigzomleoii.supabase.co'
@@ -227,7 +227,7 @@ const SUPABASE_KEY = localStorage.getItem('dewanone_supabase_key') || 'eyJhbGciO
 let supabase = null
 try {
   if(!SUPABASE_URL.includes('YOUR_PROJECT')) {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+    supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
     document.getElementById('supabase-status').textContent = 'Supabase connected'
     document.getElementById('supabase-status').className = 'text-emerald-600 font-medium'
   }
@@ -290,75 +290,58 @@ function renderNav(){
   lucide.createIcons()
 }
 
-// --- Navigation & UI interactions ---
-const pageMeta = {
-  dashboard: ['Dashboard Sekwan','Pengendalian, pemantauan & pelaporan tugas Setwan'],
-  kegiatan: ['Dashboard Kegiatan','Monitoring operasional kegiatan Setwan'],
-  usulan: ['Register Usulan','Database utama usulan DPRD'],
-  rkegiatan: ['Register Kegiatan','Register kegiatan dan tugas Setwan'],
-  monitoring: ['Monitoring','Pemantauan tindak lanjut dan status'],
-  perencanaan: ['Perencanaan','Perencanaan, prioritas dan pengendalian'],
-  'rekap-opd': ['Rekap OPD','Rekap usulan berdasarkan OPD tujuan'],
-  laporan: ['Laporan Sekwan','Laporan periodik Sekretariat DPRD'],
-  kpi: ['KPI Sekwan','Indikator kinerja dan capaian'],
-  master: ['Master & Hak Akses','Data master dan pengaturan akses']
-};
+// --- NAVIGATION FIX: aktifkan tombol menu tanpa mengubah mesin data/Supabase ---
+const navTargets = {
+  dashboard: 'kpi-section',
+  kegiatan: 'kegiatan-section',
+  usulan: 'usulan-body',
+  rkegiatan: 'kegiatan-body',
+  monitoring: 'peta-kendali-body',
+  perencanaan: 'kpi-section',
+  'rekap-opd': 'chart-opd',
+  laporan: 'peta-kendali-body',
+  kpi: 'kpi-section',
+  master: 'kpi-section'
+}
 
-function setActiveNav(page){
+function activateNav(page){
   document.querySelectorAll('.nav-btn').forEach(btn=>{
-    const active = btn.dataset.page === page;
-    btn.classList.toggle('bg-white', active);
-    btn.classList.toggle('text-[#0F172A]', active);
-    btn.classList.toggle('font-semibold', active);
-    btn.classList.toggle('text-white', !active);
-  });
-  const meta = pageMeta[page] || pageMeta.dashboard;
-  document.getElementById('page-title').textContent = meta[0];
-  document.getElementById('page-subtitle').textContent = meta[1];
+    const active = btn.dataset.page === page
+    btn.classList.toggle('bg-white', active)
+    btn.classList.toggle('text-[#0F172A]', active)
+    btn.classList.toggle('font-semibold', active)
+  })
 
-  // Dashboard tetap menampilkan seluruh dashboard pada versi single-page.
-  // Klik register/laporan melakukan scroll ke bagian data yang relevan.
-  const targetMap = {
-    dashboard: 'kpi-section',
-    kegiatan: 'kegiatan-section',
-    usulan: 'usulan-body',
-    rkegiatan: 'kegiatan-body',
-    monitoring: 'peta-kendali-body',
-    perencanaan: 'kpi-section',
-    'rekap-opd': 'chart-opd',
-    laporan: 'peta-kendali-body',
-    kpi: 'kpi-section',
-    master: 'kpi-section'
-  };
-  const target = document.getElementById(targetMap[page]);
-  if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+  const title = document.getElementById('page-title')
+  const subtitle = document.getElementById('page-subtitle')
+  const meta = {
+    dashboard:['Dashboard Sekwan','Pengendalian, pemantauan & pelaporan tugas Setwan'],
+    kegiatan:['Dashboard Kegiatan','Monitoring operasional kegiatan Setwan'],
+    usulan:['Register Usulan','Database utama usulan DPRD'],
+    rkegiatan:['Register Kegiatan','Register kegiatan dan tugas Setwan'],
+    monitoring:['Monitoring','Pemantauan tindak lanjut dan status'],
+    perencanaan:['Perencanaan','Perencanaan, prioritas dan pengendalian'],
+    'rekap-opd':['Rekap OPD','Rekap usulan berdasarkan OPD tujuan'],
+    laporan:['Laporan Sekwan','Laporan periodik Sekretariat DPRD'],
+    kpi:['KPI Sekwan','Indikator kinerja dan capaian'],
+    master:['Master & Hak Akses','Data master dan pengaturan akses']
+  }
+  if(meta[page]){
+    title.textContent = meta[page][0]
+    subtitle.textContent = meta[page][1]
+  }
+
+  const id = navTargets[page]
+  const target = id ? document.getElementById(id) : null
+  if(target) target.scrollIntoView({behavior:'smooth', block:'start'})
 }
 
-document.addEventListener('click', (e)=>{
-  const nav = e.target.closest('.nav-btn');
-  if(nav){
-    e.preventDefault();
-    setActiveNav(nav.dataset.page);
-    if(window.innerWidth < 1024) document.getElementById('sidebar').classList.add('-translate-x-full');
-  }
-});
-
-const toggleBtn = document.getElementById('btn-toggle');
-if(toggleBtn){
-  toggleBtn.addEventListener('click', ()=>{
-    document.getElementById('sidebar').classList.toggle('-translate-x-full');
-  });
-}
-
-// Klik area di luar sidebar pada layar kecil menutup sidebar
-document.addEventListener('click',(e)=>{
-  if(window.innerWidth < 1024){
-    const sidebar=document.getElementById('sidebar');
-    if(!sidebar.contains(e.target) && !e.target.closest('#btn-toggle')){
-      sidebar.classList.add('-translate-x-full');
-    }
-  }
-});
+document.addEventListener('click', e=>{
+  const btn = e.target.closest('.nav-btn')
+  if(!btn) return
+  e.preventDefault()
+  activateNav(btn.dataset.page)
+})
 
 // --- KPI ---
 function renderKPI(){
@@ -544,7 +527,6 @@ document.getElementById('modal-save').onclick = async ()=>{
 
 // init
 renderNav()
-if(window.innerWidth < 1024) document.getElementById('sidebar').classList.add('-translate-x-full')
 render()
 loadFromSupabase()
 lucide.createIcons()
@@ -553,9 +535,6 @@ lucide.createIcons()
 if(!supabase){
   console.log('Tip: set localStorage dewanone_supabase_url & dewanone_supabase_key lalu reload untuk konek Supabase')
 }
-window.addEventListener('error',(e)=>{
-  console.error('DewanOne error:', e.error || e.message);
-});
 </script>
 
 <!-- ENV SETUP INSTRUCTIONS (hidden, for GitHub) -->
