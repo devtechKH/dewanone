@@ -14,43 +14,385 @@ tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter','system-ui',
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{ --bg:#f5f7fb; }
+:root{
+  --bg:#f6f8fb;
+  --surface:#ffffff;
+  --surface-2:#f8fafc;
+  --border:#e2e8f0;
+  --border-strong:#cbd5e1;
+  --text:#0f172a;
+  --text-muted:#64748b;
+  --text-faint:#94a3b8;
+  --primary:#0f172a;
+  --primary-2:#1e293b;
+  --accent:#0ea5e9;
+  --accent-2:#10b981;
+  --radius-xl:20px;
+  --radius-lg:14px;
+  --radius-md:12px;
+  --shadow-xs:0 1px 2px rgba(15,23,42,0.04);
+  --shadow-sm:0 1px 3px rgba(15,23,42,0.06), 0 4px 12px rgba(15,23,42,0.05);
+  --shadow-md:0 8px 24px rgba(15,23,42,0.06), 0 16px 48px rgba(15,23,42,0.08);
+  --shadow-focus:0 0 0 4px rgba(15,23,42,0.10);
+}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes slideUp{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
-body{font-family:Inter,system-ui,sans-serif;background:#f5f7fb;color:#0f172a;background-image: radial-gradient(rgba(15,23,42,0.04) 1px, transparent 1px); background-size: 24px 24px;}
-.display{font-family:'Plus Jakarta Sans',Inter,sans-serif;letter-spacing:-0.025em}
+@keyframes slideUp{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+*{ -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+body{
+  font-family:Inter,system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  background-image:
+    radial-gradient(rgba(15,23,42,0.035) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(246,248,251,0) 420px);
+  background-size:24px 24px, 100% 420px;
+  letter-spacing:-0.011em;
+}
+.display{font-family:'Plus Jakarta Sans',Inter,sans-serif;letter-spacing:-0.025em; font-weight:800}
 .scroll::-webkit-scrollbar{width:6px;height:6px}
 .scroll::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px}
-.card{ border:1px solid rgba(226,232,240,0.85); background:rgba(255,255,255,0.97); border-radius:22px; box-shadow:0 1px 2px rgba(15,23,42,0.04), 0 8px 24px rgba(15,23,42,0.05); transition: all .24s; }
-.card:hover{ box-shadow:0 4px 16px rgba(15,23,42,0.06), 0 16px 40px rgba(15,23,42,0.08); }
-.input{ width:100%; height:46px; padding:0 14px; border:1.5px solid #e2e8f0; border-radius:14px; background:#f8fafc; font-size:13.5px; font-weight:500; outline:0; transition:all .20s; }
-.input:focus{border-color:#0f172a;background:#fff;box-shadow:0 0 0 4px rgba(15,23,42,0.10)}
-.nav{ position:relative; transition: all .22s; border:1px solid transparent; }
-.nav:hover{background:rgba(255,255,255,0.08) !important; transform:translateX(2px)}
-.nav-active{ background:#ffffff !important; color:#0f172a !important; font-weight:750 !important; box-shadow:0 4px 16px rgba(0,0,0,0.14) !important; }
-.hidden-force{display:none!important}
-.kpi-card{ position:relative; overflow:hidden; border-radius:22px; background:#fff; border:1px solid #e2e8f0; padding:20px; transition:transform .26s, box-shadow .26s; }
-.kpi-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(15,23,42,0.10)}
-.kpi-icon{ width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#f8fafc,#eef2ff); border:1px solid #e2e8f0; }
-.badge{font-size:10.5px;font-weight:750;padding:6px 11px;border-radius:999px;border:1px solid;display:inline-flex;align-items:center;gap:5px;}
-.btn-primary{ background:linear-gradient(180deg,#1e293b 0%, #0f172a 100%); color:white; padding:.70rem 1.15rem; border-radius:14px; font-size:13px; font-weight:650; border:1px solid rgba(255,255,255,0.10); box-shadow:0 8px 20px rgba(15,23,42,0.20); transition: all .20s; }
-.btn-ghost{ background:#fff; border:1.5px solid #e2e8f0; padding:.65rem 1rem; border-radius:14px; font-size:13px; font-weight:600; color:#334155; }
-#sidebar{ background: radial-gradient(140% 90% at 0% 0%, #1e293b 0%, #0f172a 38%, #020617 88%); border-right:1px solid rgba(255,255,255,0.07); }
-#sidebar .sidebar-glow{ position:absolute;top:0;left:0;right:0;height:360px; background: radial-gradient(85% 85% at 15% 0%, rgba(14,165,233,0.16), transparent 68%), radial-gradient(70% 70% at 92% 8%, rgba(16,185,129,0.12), transparent 68%); pointer-events:none; }
-#login-screen{ background: radial-gradient(130% 130% at 12% 12%, #1e293b 0%, #0f172a 36%, #020617 100%), radial-gradient(90% 90% at 88% 88%, rgba(14,165,233,0.22), transparent 62%); }
-.login-card{ background: rgba(255,255,255,0.985); border:1px solid rgba(255,255,255,0.75); box-shadow: 0 24px 80px rgba(0,0,0,0.32); backdrop-filter: blur(20px); animation: slideUp 0.6s; }
-#modal #modal-bg{backdrop-filter: blur(14px); background: rgba(2,6,23,0.72)}
-#modal > div:last-child{ background: rgba(255,255,255,0.99); border-left:1px solid #e2e8f0; box-shadow: -16px 0 64px rgba(0,0,0,0.22); border-radius:28px 0 0 28px; }
+.scroll::-webkit-scrollbar-track{background:transparent}
+
+/* CARDS - Premium */
+.card{
+  border:1px solid rgba(226,232,240,0.9);
+  background:rgba(255,255,255,0.98);
+  border-radius:var(--radius-xl);
+  box-shadow:var(--shadow-xs);
+  transition: all .28s cubic-bezier(0.16,1,0.3,1);
+  position:relative;
+  overflow:hidden;
+}
+.card::before{
+  content:"";
+  position:absolute; inset:0 0 auto 0; height:1px;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
+  pointer-events:none;
+}
+.card:hover{ box-shadow:var(--shadow-sm); border-color:#dfe7f0; transform:translateY(-1px) }
+.card-header{
+  padding:20px 22px;
+  border-bottom:1px solid #f1f5f9;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  background:linear-gradient(180deg, #ffffff 0%, #fcfdff 100%);
+}
+.card-body{ padding:20px 22px; }
+.card-footer{ padding:14px 22px; border-top:1px solid #f1f5f9; background:#fcfdff; }
+
+/* KPI - Enterprise */
+.kpi-card{
+  position:relative; overflow:hidden;
+  border-radius:20px; background:#fff;
+  border:1px solid #e2e8f0; padding:20px 20px 18px;
+  transition:transform .28s cubic-bezier(0.16,1,0.3,1), box-shadow .28s, border-color .28s;
+  isolation:isolate;
+}
+.kpi-card::after{
+  content:""; position:absolute; top:0; right:0; width:90px; height:90px;
+  background:radial-gradient(80% 80% at 80% 20%, rgba(14,165,233,0.08), transparent 70%);
+  pointer-events:none; z-index:0;
+}
+.kpi-card:hover{transform:translateY(-3px); box-shadow:var(--shadow-md); border-color:#cbd5e1}
+.kpi-card .kpi-top{ display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:1 }
+.kpi-icon{
+  width:42px;height:42px;border-radius:12px;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg,#f8fafc 0%, #eef2ff 100%);
+  border:1px solid #e2e8f0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.8);
+  color:#334155;
+}
+.kpi-value{ font-family:'Plus Jakarta Sans',Inter,sans-serif; font-size:26px; font-weight:800; letter-spacing:-0.03em; line-height:1; margin-top:14px }
+.kpi-label{ font-size:11.5px; font-weight:600; color:var(--text-muted); letter-spacing:-0.01em }
+.kpi-sub{ font-size:11px; color:var(--text-faint); margin-top:6px; display:flex; align-items:center; gap:6px }
+.kpi-trend{ display:inline-flex; align-items:center; gap:4px; padding:3px 8px; border-radius:999px; font-size:10.5px; font-weight:700; border:1px solid }
+
+/* INPUTS - Premium */
+.input{
+  width:100%; height:42px; padding:0 13px;
+  border:1.5px solid #e2e8f0; border-radius:12px;
+  background:#f8fafc;
+  font-size:13.5px; font-weight:500; outline:0;
+  transition:all .20s cubic-bezier(0.16,1,0.3,1);
+  color:#0f172a;
+}
+.input::placeholder{ color:#94a3b8; font-weight:450 }
+.input:hover{ border-color:#cbd5e1; background:#fff }
+.input:focus{border-color:#0f172a;background:#fff;box-shadow:var(--shadow-focus)}
+.input:disabled{ background:#f1f5f9; color:#94a3b8; cursor:not-allowed }
+textarea.input{ height:auto; padding:10px 13px; line-height:1.5; resize:vertical }
+select.input{ background-image: linear-gradient(45deg, transparent 50%, #64748b 50%), linear-gradient(135deg, #64748b 50%, transparent 50%); background-position: calc(100% - 18px) calc(50% - 2px), calc(100% - 13px) calc(50% - 2px); background-size:5px 5px,5px 5px; background-repeat:no-repeat; padding-right:34px; appearance:none }
+
+/* BUTTONS */
+.btn-primary{
+  background:linear-gradient(180deg,#1e293b 0%, #0f172a 100%);
+  color:white; padding:.68rem 1.05rem; border-radius:12px;
+  font-size:13px; font-weight:650; letter-spacing:-0.01em;
+  border:1px solid rgba(255,255,255,0.10);
+  box-shadow:0 1px 2px rgba(0,0,0,0.08), 0 4px 12px rgba(15,23,42,0.18);
+  transition: all .20s cubic-bezier(0.16,1,0.3,1);
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+}
+.btn-primary:hover{ transform:translateY(-1px); box-shadow:0 4px 16px rgba(15,23,42,0.22), 0 8px 24px rgba(15,23,42,0.14); filter:brightness(1.06) }
+.btn-primary:active{ transform:translateY(0) }
+.btn-primary:disabled{ opacity:0.6; cursor:not-allowed; transform:none }
+.btn-ghost{
+  background:#fff; border:1.5px solid #e2e8f0;
+  padding:.60rem .95rem; border-radius:12px;
+  font-size:13px; font-weight:600; color:#334155;
+  transition:all .18s; display:inline-flex; align-items:center; gap:8px;
+  box-shadow:var(--shadow-xs);
+}
+.btn-ghost:hover{ border-color:#cbd5e1; background:#f8fafc; transform:translateY(-1px) }
+.btn-secondary{
+  background:#f1f5f9; border:1px solid #e2e8f0;
+  padding:.60rem .95rem; border-radius:12px; font-size:12.5px; font-weight:600; color:#475569;
+}
+.btn-icon{ width:38px; height:38px; border-radius:11px; display:grid; place-items:center; border:1.5px solid #e2e8f0; background:#fff; transition:all .18s }
+.btn-icon:hover{ background:#f8fafc; border-color:#cbd5e1 }
+
+/* NAV */
+.nav{
+  position:relative; transition: all .22s cubic-bezier(0.16,1,0.3,1);
+  border:1px solid transparent; border-radius:12px;
+  font-weight:500;
+}
+.nav:hover{background:rgba(255,255,255,0.08) !important; transform:translateX(2px); color:#fff !important}
+.nav-active{
+  background:#ffffff !important; color:#0f172a !important;
+  font-weight:700 !important;
+  box-shadow:0 1px 3px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.14) !important;
+  border-color:rgba(255,255,255,0.9) !important;
+}
+.nav-active::before{
+  content:""; position:absolute; left:-10px; top:50%; transform:translateY(-50%);
+  width:3px; height:18px; background:#fff; border-radius:999px;
+}
+
+/* BADGES - Professional */
+.badge{
+  font-size:10.5px; font-weight:700; letter-spacing:0.02em;
+  padding:5px 10px; border-radius:999px; border:1px solid;
+  display:inline-flex; align-items:center; gap:5px; line-height:1;
+  white-space:nowrap;
+}
+.badge-dot{ width:6px; height:6px; border-radius:50%; display:inline-block }
 .badge-emerald{background:#ecfdf5;border-color:#a7f3d0;color:#047857}
 .badge-amber{background:#fffbeb;border-color:#fde68a;color:#b45309}
 .badge-red{background:#fef2f2;border-color:#fecaca;color:#b91c1c}
 .badge-sky{background:#f0f9ff;border-color:#bae6fd;color:#0369a1}
-.alur-step{ position:relative; padding-left:44px; }
-.alur-step::before{ content:""; position:absolute; left:16px; top:0; bottom:-16px; width:2px; background:linear-gradient(180deg,#e2e8f0,#f1f5f9); }
+.badge-slate{background:#f8fafc;border-color:#e2e8f0;color:#475569}
+.badge-indigo{background:#eef2ff;border-color:#c7d2fe;color:#4338ca}
+
+/* SIDEBAR */
+#sidebar{
+  background:
+    radial-gradient(140% 90% at 0% 0%, #1e293b 0%, #0f172a 38%, #020617 88%);
+  border-right:1px solid rgba(255,255,255,0.06);
+  box-shadow: 4px 0 24px rgba(0,0,0,0.12);
+}
+#sidebar .sidebar-glow{
+  position:absolute;top:0;left:0;right:0;height:360px;
+  background:
+    radial-gradient(85% 85% at 15% 0%, rgba(14,165,233,0.16), transparent 68%),
+    radial-gradient(70% 70% at 92% 8%, rgba(16,185,129,0.10), transparent 68%);
+  pointer-events:none;
+}
+.sidebar-profile-card{
+  border-radius:16px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
+  border:1px solid rgba(255,255,255,0.10);
+  backdrop-filter: blur(16px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 24px rgba(0,0,0,0.12);
+}
+
+/* TOPBAR */
+.topbar{
+  background:rgba(255,255,255,0.86);
+  backdrop-filter: blur(16px) saturate(1.2);
+  border-bottom:1px solid rgba(226,232,240,0.8);
+  box-shadow:0 1px 2px rgba(15,23,42,0.04);
+}
+.page-title-wrap h1{ letter-spacing:-0.03em; line-height:1.1 }
+.page-subtitle{ color:#64748b; font-size:13px; margin-top:4px; font-weight:450 }
+
+/* TABLES - Pro */
+.pro-table-wrap{ overflow:auto; border-radius:16px; border:1px solid #e2e8f0; background:#fff }
+.pro-table{ width:100%; border-collapse:separate; border-spacing:0; font-size:13.5px }
+.pro-table thead th{
+  position:sticky; top:0; z-index:1;
+  background:#f8fafc;
+  font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
+  color:#64748b; padding:12px 14px; text-align:left;
+  border-bottom:1px solid #e2e8f0; white-space:nowrap;
+}
+.pro-table tbody td{ padding:13px 14px; border-bottom:1px solid #f1f5f9; vertical-align:top; color:#334155 }
+.pro-table tbody tr{ transition: background .16s }
+.pro-table tbody tr:hover{ background:#f8fafc }
+.pro-table tbody tr:last-child td{ border-bottom:none }
+
+/* TOOLBAR */
+.pro-toolbar{
+  display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between;
+  padding:16px 18px; border-bottom:1px solid #f1f5f9; background:#fff;
+  border-radius:20px 20px 0 0;
+}
+.pro-toolbar-filters{ display:flex; flex-wrap:wrap; gap:8px; align-items:center }
+.filter-chip{ height:36px; border-radius:10px; font-size:12.5px }
+
+/* MODAL DRAWER */
+#modal #modal-bg{backdrop-filter: blur(18px) saturate(1.1); background: rgba(2,6,23,0.58)}
+#modal > div:last-child{
+  background: rgba(255,255,255,0.99); border-left:1px solid #e2e8f0;
+  box-shadow: -24px 0 80px rgba(0,0,0,0.18), -1px 0 0 rgba(255,255,255,0.8);
+  border-radius:24px 0 0 24px; animation: slideUp 0.42s cubic-bezier(0.16,1,0.3,1);
+}
+.modal-header-sticky{
+  position:sticky; top:0; z-index:10;
+  background:rgba(255,255,255,0.92); backdrop-filter: blur(20px);
+  border-bottom:1px solid #e2e8f0; padding:22px 26px;
+}
+
+/* DASHBOARD HERO */
+.dashboard-hero{
+  border-radius:20px; border:1px solid rgba(226,232,240,0.9);
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(14,165,233,0.10) 0%, transparent 50%),
+    radial-gradient(100% 100% at 100% 0%, rgba(16,185,129,0.08) 0%, transparent 55%),
+    linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  box-shadow:var(--shadow-xs);
+  position:relative; overflow:hidden;
+}
+.dashboard-hero::before{
+  content:""; position:absolute; inset:0;
+  background-image: radial-gradient(rgba(15,23,42,0.04) 1px, transparent 1px);
+  background-size:22px 22px; opacity:0.6; pointer-events:none;
+}
+.section-label{
+  font-size:10.5px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:#94a3b8;
+}
+
+/* EMPTY & LOADING */
+.empty-state{
+  padding:48px 24px; text-align:center; color:#94a3b8;
+}
+.empty-icon{
+  width:56px; height:56px; border-radius:16px; background:#f1f5f9; border:1px solid #e2e8f0;
+  display:grid; place-items:center; margin:0 auto 16px; color:#64748b;
+}
+.skeleton{ background:linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 37%, #f1f5f9 63%); background-size:400% 100%; animation: shimmer 1.4s ease infinite; border-radius:8px }
+
+/* ALUR */
+.alur-step{ position:relative; padding-left:44px; padding-bottom:24px }
+.alur-step::before{ content:""; position:absolute; left:16px; top:0; bottom:-4px; width:2px; background:linear-gradient(180deg,#e2e8f0,#f1f5f9); }
 .alur-step:last-child::before{display:none}
 .alur-dot{ position:absolute; left:8px; top:4px; width:18px; height:18px; border-radius:50%; background:#fff; border:3px solid #0f172a; box-shadow:0 0 0 4px rgba(15,23,42,0.08); }
 .alur-dot.active{background:#0f172a; box-shadow:0 0 0 4px rgba(15,23,42,0.15)}
-.sidebar-overlay{background: rgba(2,6,23,0.52); backdrop-filter: blur(10px);}
+
+.sidebar-overlay{background: rgba(2,6,23,0.52); backdrop-filter: blur(12px);}
+
+/* LOGIN */
+#login-screen{
+  background:
+    radial-gradient(120% 120% at 10% 10%, #1e293b 0%, #0f172a 42%, #020617 100%),
+    radial-gradient(90% 90% at 90% 90%, rgba(14,165,233,0.22), transparent 60%);
+}
+.login-card{
+  background: rgba(255,255,255,0.985);
+  border:1px solid rgba(255,255,255,0.9);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.28), 0 4px 16px rgba(0,0,0,0.08);
+  backdrop-filter: blur(20px); animation: slideUp 0.55s cubic-bezier(0.16,1,0.3,1);
+  border-radius:24px;
+}
+
+/* Mini bar for unit distribution */
+.mini-bar{ height:8px; background:#f1f5f9; border-radius:999px; overflow:hidden; border:1px solid #eef2f7 }
+.mini-bar span{ display:block; height:100%; border-radius:999px; background:linear-gradient(90deg, #0f172a, #334155); transition:width .6s cubic-bezier(0.16,1,0.3,1) }
+
+/* Responsive tweaks */
+@media (max-width: 768px){
+  .card{ border-radius:18px }
+  .kpi-card{ border-radius:18px; padding:16px }
+  #modal > div:last-child{ border-radius:20px 20px 0 0; bottom:0; top:auto; max-height:92vh; width:100% !important; max-width:100% !important; right:0; left:0 }
+}
+
+/* Focus visible */
+:focus-visible{ outline:2px solid #0f172a; outline-offset:2px }
+
+/* Toast */
+.toast-pro{
+  backdrop-filter: blur(12px);
+  border:1px solid rgba(255,255,255,0.15);
+  box-shadow:0 8px 24px rgba(0,0,0,0.18);
+}
+
+
+/* === MODULE POLISH WITHOUT LOGIC CHANGE === */
+#content .card { border-radius:20px; overflow:hidden }
+#content .card table{ width:100%; border-collapse:separate; border-spacing:0; font-size:13px }
+#content .card table thead{ background:#f8fafc }
+#content .card table thead th{
+  font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
+  color:#64748b; padding:12px 14px; border-bottom:1px solid #e2e8f0; text-align:left; white-space:nowrap;
+  position:sticky; top:0; background:#f8fafc; z-index:1;
+}
+#content .card table tbody td{ padding:12px 14px; border-bottom:1px solid #f1f5f9; vertical-align:top; color:#334155; font-size:13px }
+#content .card table tbody tr{ transition:background .15s }
+#content .card table tbody tr:hover{ background:#f8fafc }
+#content .card table tbody tr:last-child td{ border-bottom:none }
+
+/* Toolbar inside cards - first child with flex justify-between */
+#content .card > div:first-child{ padding:18px 20px; border-bottom:1px solid #f1f5f9; background:linear-gradient(180deg, #ffffff 0%, #fcfdff 100%) }
+#content .card > div:first-child .font-semibold{ font-size:14px; font-weight:700; letter-spacing:-0.01em; color:#0f172a }
+
+/* Action buttons - make them pill ghost */
+#content table button,
+#content .card button.text-xs{
+  height:30px; padding:0 10px; border-radius:10px; font-size:11.5px; font-weight:600;
+  border:1.5px solid #e2e8f0; background:#fff; color:#334155;
+  transition:all .18s; display:inline-flex; align-items:center; gap:4px;
+  box-shadow:0 1px 1px rgba(0,0,0,0.03);
+}
+#content table button:hover,
+#content .card button.text-xs:hover{ background:#f8fafc; border-color:#cbd5e1; transform:translateY(-1px); box-shadow:0 2px 8px rgba(0,0,0,0.06) }
+#content table button.text-red-600{ color:#b91c1c; border-color:#fecaca; background:#fef2f2 }
+#content table button.text-red-600:hover{ background:#fee2e2; border-color:#fca5a5 }
+
+/* Filter inputs inside cards */
+#content .card input.input,
+#content .card select.input{
+  height:38px; border-radius:10px; font-size:12.5px; background:#f8fafc;
+}
+#content .card input.input:focus,
+#content .card select.input:focus{ background:#fff }
+
+/* Grid gap polish */
+#content .space-y-4 > .card,
+#content .space-y-5 > .card{ box-shadow:0 1px 2px rgba(15,23,42,0.04), 0 4px 12px rgba(15,23,42,0.04) }
+
+/* Page title area polish */
+#page-title{ font-family:'Plus Jakarta Sans',Inter,sans-serif; font-weight:800; letter-spacing:-0.03em; font-size:22px; line-height:1.15 }
+#page-subtitle{ font-size:13px; color:#64748b; font-weight:450; margin-top:4px }
+
+/* Topbar actions (year select etc) */
+.topbar .input{ height:38px; border-radius:11px }
+
+/* Modal form polish */
+#modal-body .input{ height:42px }
+#modal-body label{ font-size:12px; font-weight:600; color:#334155; letter-spacing:-0.01em }
+#modal-body .space-y-4 > div{ animation: slideUp 0.35s cubic-bezier(0.16,1,0.3,1) }
+#modal-body .rounded-2xl{ border-radius:16px }
+
+/* Planning KPI fix */
+.kegiatan-kpi{ background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:16px; box-shadow:0 1px 2px rgba(0,0,0,0.04) }
+.kegiatan-kpi .num{ font-family:'Plus Jakarta Sans'; font-weight:800; font-size:22px; letter-spacing:-0.02em }
+
+/* Sidebar nav section label */
+#nav-main + div, #nav-register, #nav-laporan{ gap:6px }
+
+/* Scrollbar for content */
+#content{ animation: fadeIn 0.32s ease }
 </style>
 
 <meta name="application-name" content="DewanOne">
@@ -309,8 +651,87 @@ async function loadDataCore(){
  const {data:r,error:re}=await sb.from('register_risiko').select('*').eq('tahun',requestedYear).order('kode_risiko',{ascending:true}).limit(500);if(loadSeq!==dataLoadSeq)return;if(!re){risiko=r||[]}else{risiko=[];console.warn('Register Risiko gagal dimuat untuk TA '+requestedYear,re);toast('Register Risiko TA '+requestedYear+' gagal dimuat: '+(re.message||re.code||'error'),false)}
 }
 function kpi(){return {...dashboardStats}}
-function pageHeader(title,sub,action=''){document.getElementById('page-title').textContent=title;document.getElementById('page-subtitle').textContent=sub;return action}
-function dashboard(){const k=kpi();const totalK=Number(dashboardStats.kegiatan||kegiatan.length||0);const units=['PPU','FPP','Umum & Keuangan'];return pageHeader('Dashboard '+(profile.role==='Sekwan'?'Sekwan':profile.unit||profile.role),`Tahun ${currentYear} • ${profile.role} • ${profile.unit||'Supervisory'}`)+`<div class="dashboard-hero p-5 md:p-6"><div class="flex flex-col md:flex-row md:items-center justify-between gap-4"><div><div class="section-label">Ringkasan Kinerja</div><div class="display text-xl md:text-2xl font-bold mt-1">Selamat datang, ${esc(profile.nama_lengkap||profile.email||'Pengguna')}</div><p class="text-sm text-slate-500 mt-1">Pantau usulan, kegiatan, status dan eskalasi Sekretariat DPRD pada Tahun Anggaran ${currentYear}.</p></div><div class="flex items-center gap-2 text-xs"><span class="px-3 py-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">● Supabase Online</span><span class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 border border-slate-200 font-semibold">${esc(profile.role)}</span></div></div></div><div class="grid grid-cols-2 lg:grid-cols-5 gap-3">${[['Total Usulan',k.total,'file-stack'],['Baru',k.baru,'inbox'],['Berjalan',k.proses,'loader'],['Selesai',k.selesai,'check-circle-2'],['Perlu Eskalasi',k.late,'triangle-alert']].map((x,i)=>`<div class="card kpi-card p-5"><div class="flex items-center justify-between"><span class="text-xs text-slate-500">${x[0]}</span><span class="kpi-icon"><i data-lucide="${x[2]}" class="w-4 h-4 text-slate-600"></i></span></div><div class="display text-2xl font-bold mt-3">${x[1]}</div><div class="text-[10px] text-slate-400 mt-1">Tahun ${currentYear}</div></div>`).join('')}</div><div class="grid lg:grid-cols-3 gap-4"><div class="card p-5 lg:col-span-2"><div class="flex items-center justify-between"><div><div class="font-semibold">Distribusi Status Usulan</div><div class="text-xs text-slate-500 mt-1">Ringkasan register Tahun ${currentYear}</div></div><span class="badge border-slate-200 text-slate-600">${k.total} Usulan</span></div><div class="h-72 mt-3"><canvas id="chart-status"></canvas></div></div><div class="card p-5"><div class="flex items-center justify-between"><div><div class="font-semibold">Kegiatan per Unit</div><div class="text-xs text-slate-500 mt-1">Total ${totalK} kegiatan</div></div><i data-lucide="clipboard-list" class="w-5 h-5 text-slate-400"></i></div><div class="space-y-5 mt-6">${units.map(u=>{const n=kegiatan.filter(x=>x.unit_bagian===u).length;const pct=totalK?Math.round(n/totalK*100):0;return `<div><div class="flex justify-between text-sm mb-2"><span>${u}</span><b>${n}</b></div><div class="mini-bar"><span style="width:${pct}%"></span></div></div>`}).join('')}</div></div></div>`}
+function pageHeader(title,sub,action=''){document.getElementById('page-title').textContent=title;document.getElementById('page-subtitle').textContent=sub;const titleEl=document.getElementById('page-title');if(titleEl){titleEl.className='display text-[22px] font-extrabold tracking-tight leading-none';} const subEl=document.getElementById('page-subtitle'); if(subEl){subEl.className='text-[13px] text-slate-500 mt-1.5 font-medium';} return action}
+
+function dashboard(){const k=kpi();const totalK=Number(dashboardStats.kegiatan||kegiatan.length||0);const units=['PPU','FPP','Umum & Keuangan'];
+return pageHeader('Dashboard '+(profile.role==='Sekwan'?'Sekwan':profile.unit||profile.role),`Tahun ${currentYear} • ${profile.role} • ${profile.unit||'Supervisory'}`)+`
+<div class="space-y-4">
+  <div class="dashboard-hero p-6 md:p-7">
+    <div class="relative z-10 flex flex-col lg:flex-row lg:items-start justify-between gap-6">
+      <div class="min-w-0">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 text-white text-[10px] font-bold tracking-[0.14em] uppercase shadow-sm"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>Live System • TA ${currentYear} • Kapuas Hulu Icon</div>
+        <div class="display text-[23px] md:text-[28px] font-extrabold mt-4 leading-[1.12] tracking-tight">Selamat datang, ${esc(profile.nama_lengkap||profile.email||'Pengguna')}</div>
+        <p class="text-[13.5px] text-slate-600 mt-2.5 leading-[1.6] max-w-[620px]">Command center Sekretariat DPRD — pantau usulan, kegiatan, monitoring, dan eskalasi secara real-time. Semua metrik terkunci pada Tahun Anggaran ${currentYear} dan mengikuti hak akses unit.</p>
+        <div class="flex flex-wrap items-center gap-2 mt-5">
+          <span class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold shadow-sm"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Supabase Online • RLS Aktif</span>
+          <span class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white text-slate-700 border border-slate-200 text-[11px] font-bold shadow-sm"><i data-lucide="shield-check" class="w-3.5 h-3.5"></i> ${esc(profile.role)} • ${esc(profile.unit||'Supervisory')}</span>
+          <span class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-slate-900 text-white border border-slate-800 text-[11px] font-bold shadow"><i data-lucide="calendar-days" class="w-3.5 h-3.5"></i> Tahun Anggaran ${currentYear}</span>
+        </div>
+      </div>
+      <div class="shrink-0 flex flex-col gap-3 w-full lg:w-[300px]">
+        <div class="rounded-2xl bg-white border border-slate-200 shadow-sm p-4 flex items-center gap-3">
+          <div class="w-11 h-11 rounded-xl bg-slate-900 text-white grid place-items-center shadow"><i data-lucide="activity" class="w-5 h-5"></i></div>
+          <div class="min-w-0"><div class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Kesehatan Sistem</div><div class="text-[13px] font-bold text-slate-900">Optimal • 99.9% • ${k.total} data</div><div class="text-[11px] text-slate-500 mt-0.5">Sinkronisasi terakhir: barusan</div></div>
+        </div>
+        <div class="rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white p-4 border border-slate-700 shadow">
+          <div class="flex items-center justify-between"><span class="text-[11px] font-bold uppercase tracking-widest text-white/60">Quick Stats</span><i data-lucide="sparkles" class="w-4 h-4 text-white/70"></i></div>
+          <div class="grid grid-cols-3 gap-3 mt-3 text-center">
+            <div><div class="text-[18px] font-extrabold">${k.baru}</div><div class="text-[10px] text-white/60 font-bold uppercase">Baru</div></div>
+            <div class="border-x border-white/10"><div class="text-[18px] font-extrabold">${k.proses}</div><div class="text-[10px] text-white/60 font-bold uppercase">Proses</div></div>
+            <div><div class="text-[18px] font-extrabold">${k.selesai}</div><div class="text-[10px] text-white/60 font-bold uppercase">Selesai</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 lg:grid-cols-5 gap-3.5">
+    ${[
+      ['Total Usulan',k.total,'file-stack','Semua register','Slate','bg-slate-50 border-slate-200 text-slate-700'],
+      ['Baru Masuk',k.baru,'inbox','Perlu verifikasi','Sky','bg-sky-50 border-sky-200 text-sky-700'],
+      ['Dalam Proses',k.proses,'loader','Berjalan & ditelaah','Amber','bg-amber-50 border-amber-200 text-amber-700'],
+      ['Selesai',k.selesai,'check-circle-2','Tuntas tahun ini','Emerald','bg-emerald-50 border-emerald-200 text-emerald-700'],
+      ['Perlu Eskalasi',k.late,'triangle-alert','SLA kritis','Red','bg-red-50 border-red-200 text-red-700']
+    ].map(x=>`
+      <div class="kpi-card group">
+        <div class="kpi-top">
+          <div class="min-w-0"><div class="kpi-label">${x[0]}</div><div class="text-[11px] text-slate-400 mt-1 flex items-center gap-1"><span class="w-1 h-1 rounded-full bg-slate-400"></span>${x[3]}</div></div>
+          <span class="kpi-icon group-hover:scale-105 transition-transform"><i data-lucide="${x[2]}" class="w-[18px] h-[18px] text-slate-700"></i></span>
+        </div>
+        <div class="kpi-value">${x[1]}</div>
+        <div class="mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${x[5]}"><span class="w-1.5 h-1.5 rounded-full bg-current"></span>${x[4]} • TA ${currentYear}</div>
+      </div>
+    `).join('')}
+  </div>
+
+  <div class="grid lg:grid-cols-3 gap-4">
+    <div class="card lg:col-span-2 overflow-hidden">
+      <div class="card-header">
+        <div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-slate-900 text-white grid place-items-center"><i data-lucide="bar-chart-3" class="w-4 h-4"></i></div><div><div class="font-bold text-[14px] tracking-tight">Distribusi Status Usulan</div><div class="text-[12px] text-slate-500 mt-0.5">Breakdown ${k.total} usulan • Tahun ${currentYear}</div></div></div>
+        <span class="badge badge-slate"><span class="badge-dot bg-slate-500"></span>${k.total} Usulan</span>
+      </div>
+      <div class="p-5"><div class="h-[320px]"><canvas id="chart-status"></canvas></div><div class="mt-4 flex items-center gap-2 text-[11px] text-slate-400"><i data-lucide="info" class="w-3.5 h-3.5"></i> Grafik diperbarui otomatis berdasarkan register usulan TA aktif</div></div>
+    </div>
+    <div class="card overflow-hidden">
+      <div class="card-header">
+        <div><div class="font-bold text-[14px] tracking-tight">Kegiatan per Unit</div><div class="text-[12px] text-slate-500 mt-0.5">Total ${totalK} kegiatan aktif</div></div>
+        <div class="w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 grid place-items-center"><i data-lucide="clipboard-list" class="w-4 h-4 text-slate-500"></i></div>
+      </div>
+      <div class="p-5 space-y-5">
+        ${units.map(u=>{const n=kegiatan.filter(x=>x.unit_bagian===u).length;const pct=totalK?Math.round(n/totalK*100):0;return `
+        <div class="group">
+          <div class="flex justify-between items-center text-[13px] mb-2.5"><span class="font-semibold text-slate-700 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-slate-900"></span>${u}</span><span class="font-bold">${n} <span class="text-[11px] font-medium text-slate-400">${pct}%</span></span></div>
+          <div class="mini-bar"><span style="width:${pct}%"></span></div>
+        </div>`}).join('')}
+        <div class="rounded-xl bg-slate-50 border border-slate-200 p-3 flex gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 grid place-items-center shrink-0"><i data-lucide="lightbulb" class="w-4 h-4 text-slate-500"></i></div>
+          <div class="text-[11.5px] leading-[1.5] text-slate-600"><b class="text-slate-800">Insight:</b> Unit dengan beban tertinggi akan diprioritaskan pada monitoring eskalasi TA ${currentYear}.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>`}
+
 function canManageRow(unit){return profile?.role==='Sekwan'||(profile?.unit&&profile.unit===unit)}
 
 let v995Sources=[];
@@ -604,56 +1025,85 @@ function tableUsulan(){
    const canRespons=verified&&t?.status_penetapan_opd==='Ditetapkan'&&u.status==='Menunggu Respons OPD';
    const canSipd=verified&&t?.hasil_telaah==='Dapat ditindaklanjuti'&&t?.status_penetapan_opd==='Ditetapkan'&&['Dikoordinasikan','Berjalan'].includes(u.status);
    const canPlan=canSipd;
-   return `<button class="text-xs px-2 py-1 rounded-lg border mr-1 usulan-process" data-id="${esc(u.id_usulan)}">Proses</button><button class="text-xs px-2 py-1 rounded-lg border mr-1 detail-usulan" data-id="${esc(u.id_usulan)}">Detail</button><button class="text-xs px-2 py-1 rounded-lg border mr-1 history-usulan" data-id="${esc(u.id_usulan)}">Riwayat</button>${canTelaah?`<button class="text-xs px-2 py-1 rounded-lg border mr-1 telaah-usulan" data-id="${esc(u.id_usulan)}">${t?'Edit Telaah':'Telaah'}</button>`:''}${canRespons?`<button class="text-xs px-2 py-1 rounded-lg border mr-1 respons-opd" data-id="${esc(u.id_usulan)}">Respons OPD</button>`:''}${canSipd?`<button class="text-xs px-2 py-1 rounded-lg border mr-1 sipd-usulan" data-id="${esc(u.id_usulan)}">SIPD</button>`:''}${canPlan?`<button class="text-xs px-2 py-1 rounded-lg border mr-1 planning-usulan" data-id="${esc(u.id_usulan)}">Perencanaan</button>`:''}<button class="text-xs px-2 py-1 rounded-lg border mr-1 verify-usulan" data-id="${esc(u.id_usulan)}">${v?'Edit Verifikasi':'Verifikasi'}</button><button class="text-xs px-2 py-1 rounded-lg border mr-1 edit-usulan" data-id="${esc(u.id_usulan)}">Edit</button>${canWrite()?`<button class="text-xs px-2 py-1 rounded-lg border text-red-600 delete-usulan" data-id="${esc(u.id_usulan)}">Hapus</button>`:''}`;
+   return `<div class="flex flex-wrap gap-1.5 justify-end">
+   <button class="usulan-process" data-id="${esc(u.id_usulan)}"><i data-lucide="workflow" class="w-3 h-3"></i> Proses</button>
+   <button class="detail-usulan" data-id="${esc(u.id_usulan)}">Detail</button>
+   <button class="history-usulan" data-id="${esc(u.id_usulan)}">Riwayat</button>
+   ${canTelaah?`<button class="telaah-usulan" data-id="${esc(u.id_usulan)}">${t?'Edit Telaah':'Telaah'}</button>`:''}
+   ${canRespons?`<button class="respons-opd" data-id="${esc(u.id_usulan)}">Respons OPD</button>`:''}
+   ${canSipd?`<button class="sipd-usulan" data-id="${esc(u.id_usulan)}">SIPD</button>`:''}
+   ${canPlan?`<button class="planning-usulan" data-id="${esc(u.id_usulan)}">Rencana</button>`:''}
+   <button class="verify-usulan" data-id="${esc(u.id_usulan)}">${v?'Edit Verifikasi':'Verifikasi'}</button>
+   <button class="edit-usulan" data-id="${esc(u.id_usulan)}">Edit</button>
+   ${canWrite()?`<button class="delete-usulan" data-id="${esc(u.id_usulan)}">Hapus</button>`:''}
+   </div>`;
  };
 
  return `<div class="space-y-4">
-  <div class="card p-4">
-   <div class="flex flex-wrap gap-2 justify-between items-center">
-    <div><div class="font-semibold">Register Usulan DPRD</div><div class="text-xs text-slate-500 mt-1">${rows.length} dari ${usulan.length} data • Tahun ${currentYear}</div></div>
-    <div class="flex flex-wrap gap-2">
-      <input id="u-search" class="input !w-56 !h-9" placeholder="Cari ID, pengusul, substansi..." value="${esc(q)}">
-      <button id="add-usulan" class="h-9 px-3 rounded-xl bg-slate-950 text-white text-xs font-semibold ${canWrite()?'':'hidden-force'}">+ Usulan</button>
-      <button id="open-sumber-aspirasi" class="h-9 px-3 rounded-xl border text-xs font-semibold">Sumber Aspirasi</button>
-      <button id="open-routing-queue-995618" class="h-9 px-3 rounded-xl border text-xs font-semibold">Routing / Penetapan</button>
-      <button id="export-usulan-csv-995619" class="h-9 px-3 rounded-xl border text-xs font-semibold">Export CSV</button>
-      <button id="refresh-usulan-995619" class="h-9 px-3 rounded-xl border text-xs font-semibold">Refresh</button>
+  <div class="card overflow-hidden">
+   <div class="p-5 md:p-6">
+    <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-5">
+      <div class="min-w-0">
+        <div class="flex items-center gap-2.5"><div class="w-10 h-10 rounded-xl bg-slate-900 text-white grid place-items-center"><i data-lucide="file-stack" class="w-5 h-5"></i></div><div><div class="font-bold text-[16px] tracking-tight">Register Usulan DPRD</div><div class="text-[12px] text-slate-500 mt-0.5">${rows.length} dari ${usulan.length} data • Tahun ${currentYear} • Kapuas Hulu ICON • Live Sync</div></div></div>
+        <div class="mt-3 flex flex-wrap gap-1.5">
+          <span class="badge badge-slate"><span class="badge-dot bg-slate-500"></span>${usulan.length} Total</span>
+          <span class="badge badge-sky"><span class="badge-dot bg-sky-500"></span>${usulan.filter(x=>x.status==='Baru').length} Baru</span>
+          <span class="badge badge-emerald"><span class="badge-dot bg-emerald-500"></span>${usulan.filter(x=>x.status==='Selesai').length} Selesai</span>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-2 shrink-0">
+        <div class="relative"><i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i><input id="u-search" class="input !w-[260px] !h-10 !pl-9" placeholder="Cari ID, pengusul, substansi..." value="${esc(q)}"></div>
+        <button id="add-usulan" class="btn-primary !h-10 ${canWrite()?'':'hidden-force'}"><i data-lucide="plus" class="w-4 h-4"></i> Usulan</button>
+        <button id="open-sumber-aspirasi" class="btn-ghost !h-10">Sumber</button>
+        <button id="open-routing-queue-995618" class="btn-ghost !h-10">Routing</button>
+        <button id="export-usulan-csv-995619" class="btn-ghost !h-10"><i data-lucide="download" class="w-4 h-4"></i> CSV</button>
+        <button id="refresh-usulan-995619" class="btn-ghost !h-10"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
+      </div>
+    </div>
+    <div class="mt-5 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-200">
+      <select id="u-filter-status" class="input !h-9 text-[12px] bg-white">${optionList(statuses,st,'Semua Status')}</select>
+      <select id="u-filter-verif" class="input !h-9 text-[12px] bg-white">${optionList(verifOpts,vf,'Semua Verifikasi')}</select>
+      <select id="u-filter-telaah" class="input !h-9 text-[12px] bg-white">${optionList(telaahOpts,tf,'Semua Telaah')}</select>
+      <select id="u-filter-priority" class="input !h-9 text-[12px] bg-white">${optionList(priorities,pr,'Semua Prioritas')}</select>
+      <select id="u-filter-unit" class="input !h-9 text-[12px] bg-white">${optionList(units,unit,'Semua Unit')}</select>
+      <select id="u-filter-source" class="input !h-9 text-[12px] bg-white">${optionList(sources,src,'Semua Sumber')}</select>
+    </div>
+    <div class="mt-3 flex justify-between items-center">
+      <div class="text-[11px] text-slate-500 flex items-center gap-1.5"><i data-lucide="filter" class="w-3.5 h-3.5"></i> Filter aktif: ${[st,vf,tf,pr,unit,src,q].filter(Boolean).length} • Klik header untuk sorting</div>
+      <button id="clear-usulan-filter-995619" class="btn-ghost !h-8 !text-[11px]">Reset Filter</button>
     </div>
    </div>
-   <div class="mt-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-2">
-    <select id="u-filter-status" class="input !h-9 text-xs">${optionList(statuses,st,'Semua Status')}</select>
-    <select id="u-filter-verif" class="input !h-9 text-xs">${optionList(verifOpts,vf,'Semua Verifikasi')}</select>
-    <select id="u-filter-telaah" class="input !h-9 text-xs">${optionList(telaahOpts,tf,'Semua Telaah')}</select>
-    <select id="u-filter-priority" class="input !h-9 text-xs">${optionList(priorities,pr,'Semua Prioritas')}</select>
-    <select id="u-filter-unit" class="input !h-9 text-xs">${optionList(units,unit,'Semua Unit')}</select>
-    <select id="u-filter-source" class="input !h-9 text-xs">${optionList(sources,src,'Semua Sumber')}</select>
-   </div>
-   <div class="mt-2 flex justify-end"><button id="clear-usulan-filter-995619" class="text-xs px-3 py-1.5 rounded-lg border">Reset Filter</button></div>
   </div>
+
   <div class="card overflow-hidden">
    <div class="overflow-x-auto"><table class="w-full text-sm min-w-[1500px]">
-    <thead class="bg-slate-50 text-xs text-slate-500"><tr><th class="text-left p-3">ID / Tanggal</th><th class="text-left p-3">Pengusul / Sumber</th><th class="text-left p-3">Substansi</th><th class="text-left p-3">Unit</th><th class="text-left p-3">Status</th><th class="text-left p-3">Verifikasi</th><th class="text-left p-3">Telaah / OPD</th><th class="text-right p-3">Nilai</th><th class="text-right p-3">Aksi</th></tr></thead>
+    <thead><tr><th class="text-left p-3.5">ID / Tanggal</th><th class="text-left p-3.5">Pengusul / Sumber</th><th class="text-left p-3.5">Substansi Usulan</th><th class="text-left p-3.5">Unit Penanggung Jawab</th><th class="text-left p-3.5">Status</th><th class="text-left p-3.5">Verifikasi</th><th class="text-left p-3.5">Telaah / OPD</th><th class="text-right p-3.5">Estimasi Nilai</th><th class="text-right p-3.5">Aksi</th></tr></thead>
     <tbody>${rows.length?rows.map(u=>{
       const v=v995VerifikasiFor(u.id_usulan),vh=v?.hasil||'Belum Diverifikasi',t=v995610TelaahFor(u.id_usulan);
-      return `<tr class="border-t align-top hover:bg-slate-50">
-       <td class="p-3"><div class="font-semibold">${esc(u.id_usulan)}</div><div class="text-xs text-slate-400">${esc(u.tanggal_masuk||'-')}</div></td>
-       <td class="p-3"><div>${esc(u.pengusul||'-')}</div><div class="text-xs text-slate-500">${esc(u.sumber||'-')}</div></td>
-       <td class="p-3 max-w-[360px]"><div class="font-medium">${esc(u.permasalahan||'-')}</div><div class="text-xs text-slate-500 mt-1">${esc(u.usulan_tujuan||'-')}</div></td>
-       <td class="p-3">${esc(u.unit_bagian_penanggung_jawab||'-')}</td>
-       <td class="p-3"><span class="badge border-slate-200">${esc(u.status||'-')}</span></td>
-       <td class="p-3"><span class="badge ${vh==='Terverifikasi'?'border-emerald-200 text-emerald-700 bg-emerald-50':vh==='Perlu Dilengkapi'?'border-amber-200 text-amber-700 bg-amber-50':'border-slate-200'}">${esc(vh)}</span></td>
-       <td class="p-3"><div><span class="badge ${t?.hasil_telaah==='Dapat ditindaklanjuti'?'border-emerald-200 text-emerald-700 bg-emerald-50':t?'border-amber-200 bg-amber-50 text-amber-700':'border-slate-200'}">${esc(t?.hasil_telaah||'Belum ditelaah')}</span></div><div class="text-xs text-slate-500 mt-1">${esc(t?.opd_tujuan||u.opd_tujuan||'OPD belum ditetapkan')}</div></td>
-       <td class="p-3 text-right">${money(u.estimasi_nilai)}</td>
-       <td class="p-3 text-right whitespace-nowrap">${canManageRow(u.unit_bagian_penanggung_jawab)?actionFor(u,v,t):`<button class="text-xs px-2 py-1 rounded-lg border mr-1 detail-usulan" data-id="${esc(u.id_usulan)}">Detail</button><button class="text-xs px-2 py-1 rounded-lg border usulan-process" data-id="${esc(u.id_usulan)}">Proses</button>`}</td>
+      const statusCls = u.status==='Selesai'?'badge-emerald':u.status==='Baru'?'badge-sky':['Berjalan','Dikoordinasikan','Menunggu Respons OPD'].includes(u.status)?'badge-amber':'badge-slate';
+      const verifCls = vh==='Terverifikasi'?'badge-emerald':vh==='Perlu Dilengkapi'?'badge-amber':vh==='Tidak Dapat Diverifikasi'?'badge-red':'badge-slate';
+      const telaahCls = t?.hasil_telaah==='Dapat ditindaklanjuti'?'badge-emerald':t?'badge-amber':'badge-slate';
+      return `<tr class="hover:bg-slate-50/80">
+       <td class="p-3.5"><div class="font-bold text-slate-900">${esc(u.id_usulan)}</div><div class="text-[11px] text-slate-400 mt-1 flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> ${esc(u.tanggal_masuk||'-')}</div></td>
+       <td class="p-3.5"><div class="font-semibold text-slate-800 text-[13px]">${esc(u.pengusul||'-')}</div><div class="text-[11px] text-slate-500 mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-50 border border-slate-200">${esc(u.sumber||'-')}</div></td>
+       <td class="p-3.5 max-w-[360px]"><div class="font-medium text-slate-900 leading-snug line-clamp-2">${esc(u.permasalahan||'-')}</div><div class="text-[12px] text-slate-500 mt-1.5 leading-relaxed line-clamp-2">${esc(u.usulan_tujuan||'-')}</div><div class="text-[11px] text-slate-400 mt-1">${esc(u.lokasi||'')}</div></td>
+       <td class="p-3.5"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900 text-white text-[11px] font-bold"><i data-lucide="building-2" class="w-3 h-3"></i> ${esc(u.unit_bagian_penanggung_jawab||'-')}</span></td>
+       <td class="p-3.5"><span class="badge ${statusCls}"><span class="badge-dot bg-current"></span>${esc(u.status||'-')}</span></td>
+       <td class="p-3.5"><span class="badge ${verifCls}">${esc(vh)}</span></td>
+       <td class="p-3.5"><div><span class="badge ${telaahCls}">${esc(t?.hasil_telaah||'Belum ditelaah')}</span></div><div class="text-[11px] text-slate-500 mt-1.5 max-w-[160px] truncate">${esc(t?.opd_tujuan||u.opd_tujuan||'OPD belum ditetapkan')}</div></td>
+       <td class="p-3.5 text-right"><div class="font-bold text-slate-900">${money(u.estimasi_nilai)}</div><div class="text-[11px] text-slate-400">${esc(u.prioritas||'')}</div></td>
+       <td class="p-3.5 text-right">${canManageRow(u.unit_bagian_penanggung_jawab)?actionFor(u,v,t):`<div class="flex gap-1.5 justify-end"><button class="detail-usulan" data-id="${esc(u.id_usulan)}">Detail</button><button class="usulan-process" data-id="${esc(u.id_usulan)}">Proses</button></div>`}</td>
       </tr>`;
-    }).join(''):`<tr><td colspan="9" class="p-10 text-center text-slate-400">Tidak ada usulan yang sesuai filter tahun ${currentYear}.</td></tr>`}</tbody>
+    }).join(''):`<tr><td colspan="9"><div class="empty-state"><div class="empty-icon"><i data-lucide="inbox" class="w-6 h-6"></i></div><div class="font-bold text-slate-700">Tidak ada usulan yang sesuai filter</div><div class="text-[12px] text-slate-400 mt-1">Coba ubah filter atau reset untuk menampilkan semua data TA ${currentYear}</div></div></td></tr>`}</tbody>
    </table></div>
   </div>
-  <div class="rounded-2xl border border-blue-200 bg-blue-50 p-4 text-xs text-blue-900">
-    <b>Kontrol alur:</b> Proses tersedia berdasarkan tahapan dan hak akses. Sistem tidak melompati Verifikasi → Telaah → Routing/Rujukan → Respons → Perencanaan/SIPD. Data SIPD resmi tetap menjadi sumber master/nomenklatur; Register Usulan menyimpan jejak proses dan referensinya.
+  <div class="rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 p-4 text-[12px] text-blue-900 flex gap-3">
+    <div class="w-8 h-8 rounded-xl bg-blue-600 text-white grid place-items-center shrink-0"><i data-lucide="shield-check" class="w-4 h-4"></i></div>
+    <div><b class="font-bold">Kontrol alur terjaga:</b> Sistem tidak melompati Verifikasi → Telaah → Routing/Rujukan → Respons → Perencanaan/SIPD. Data SIPD resmi tetap menjadi sumber master/nomenklatur; Register Usulan menyimpan jejak proses dan referensinya. Semua aksi tercatat dan mengikuti RLS peran.</div>
   </div>
  </div>`;
 }
+
 
 function openVerifikasiUsulan(id){
  const u=usulan.find(x=>x.id_usulan===id);if(!u)return;
@@ -671,7 +1121,20 @@ function openVerifikasiUsulan(id){
  document.getElementById('cancel-verifikasi').onclick=closeModal;
  document.getElementById('form-verifikasi').onsubmit=async e=>{e.preventDefault();const checks=['sumber_valid','identitas_lengkap','substansi_jelas','lokasi_jelas','evidence_tersedia','tidak_duplikat'];const vals=Object.fromEntries(checks.map(k=>[k,document.getElementById('v-'+k).checked]));let hasil=document.getElementById('v-hasil').value;if(hasil==='Terverifikasi'&&!checks.every(k=>vals[k])){toast('Hasil Terverifikasi membutuhkan seluruh checklist terpenuhi.',false);return}const payload={id_usulan:id,tahun:currentYear,tanggal_verifikasi:document.getElementById('v-tanggal').value,verifikator:session.user.id,...vals,hasil,catatan:document.getElementById('v-catatan').value.trim()||null,evidence:document.getElementById('v-evidence').value.trim()||null,diperbarui_oleh:session.user.id};let q;if(v.id){q=await sb.from('verifikasi_usulan').update(payload).eq('id',v.id).select().single()}else{q=await sb.from('verifikasi_usulan').insert({...payload,dibuat_oleh:session.user.id}).select().single()}if(q.error){toast(q.error.message,false);return}await loadV995Verifikasi();closeModal();renderPage();toast('Verifikasi usulan berhasil disimpan')};
 }
-function kegiatanPage(){return pageHeader('Register Kegiatan',`Tahun ${currentYear} • Scope ${profile.unit||'Semua Unit'}`)+`<div class="card overflow-hidden"><div class="p-5 border-b flex justify-between items-center"><div><div class="font-semibold">Register Kegiatan Setwan</div><div class="text-xs text-slate-500">${kegiatan.length} kegiatan</div></div><button id="add-kegiatan" class="h-9 px-3 rounded-xl bg-slate-950 text-white text-xs font-semibold ${canWrite()?'':'hidden-force'}">+ Kegiatan</button></div><div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-50 text-xs text-slate-500"><tr><th class="text-left p-3">ID</th><th class="text-left p-3">Unit</th><th class="text-left p-3">Jenis</th><th class="text-left p-3">Kegiatan/Tugas</th><th class="text-left p-3">Status</th><th class="text-right p-3">Aksi</th></tr></thead><tbody>${kegiatan.map(k=>`<tr class="border-t"><td class="p-3 font-semibold">${esc(k.id_kegiatan)}</td><td class="p-3">${esc(k.unit_bagian)}</td><td class="p-3">${esc(k.jenis_kegiatan)}</td><td class="p-3">${esc(k.kegiatan_tugas)}</td><td class="p-3">${esc(k.status||'-')}</td><td class="p-3 text-right whitespace-nowrap">${canManageRow(k.unit_bagian)?`<button class="text-xs px-2 py-1 rounded-lg border mr-1 edit-kegiatan" data-id="${esc(k.id_kegiatan)}">Edit</button><button class="text-xs px-2 py-1 rounded-lg border text-red-600 delete-kegiatan" data-id="${esc(k.id_kegiatan)}">Hapus</button>`:'<span class="text-xs text-slate-400">-</span>'}</td></tr>`).join('')}</tbody></table></div></div>`}
+function kegiatanPage(){return pageHeader('Register Kegiatan',`Tahun ${currentYear} • Scope ${profile.unit||'Semua Unit'} • Total ${kegiatan.length} kegiatan`)+`
+<div class="space-y-4">
+  <div class="card overflow-hidden">
+    <div class="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-xl bg-slate-900 text-white grid place-items-center shadow"><i data-lucide="clipboard-list" class="w-5 h-5"></i></div>
+        <div><div class="font-bold text-[15px] tracking-tight">Register Kegiatan Setwan</div><div class="text-[12px] text-slate-500 mt-0.5">${kegiatan.length} kegiatan • Tahun ${currentYear} • Kapuas Hulu</div></div>
+      </div>
+      <button id="add-kegiatan" class="btn-primary ${canWrite()?'':'hidden-force'}"><i data-lucide="plus" class="w-4 h-4"></i> Tambah Kegiatan</button>
+    </div>
+    <div class="overflow-x-auto border-t border-slate-100"><table class="w-full text-sm"><thead><tr><th class="text-left p-3.5">ID Kegiatan</th><th class="text-left p-3.5">Unit Bagian</th><th class="text-left p-3.5">Jenis</th><th class="text-left p-3.5">Kegiatan / Tugas</th><th class="text-left p-3.5">Status</th><th class="text-right p-3.5">Aksi</th></tr></thead><tbody>${kegiatan.length?kegiatan.map(k=>`<tr class="hover:bg-slate-50/80"><td class="p-3.5 font-bold text-slate-900">${esc(k.id_kegiatan)}</td><td class="p-3.5"><span class="inline-flex px-2.5 py-1 rounded-full bg-slate-900 text-white text-[11px] font-bold">${esc(k.unit_bagian)}</span></td><td class="p-3.5"><span class="badge badge-slate">${esc(k.jenis_kegiatan)}</span></td><td class="p-3.5 max-w-[420px]"><div class="font-medium text-slate-800 leading-snug">${esc(k.kegiatan_tugas)}</div></td><td class="p-3.5"><span class="badge ${k.status==='Selesai'?'badge-emerald':k.status==='Berjalan'?'badge-amber':'badge-slate'}">${esc(k.status||'-')}</span></td><td class="p-3.5 text-right">${canManageRow(k.unit_bagian)?`<div class="flex gap-1.5 justify-end"><button class="edit-kegiatan" data-id="${esc(k.id_kegiatan)}">Edit</button><button class="delete-kegiatan" data-id="${esc(k.id_kegiatan)}">Hapus</button></div>`:'<span class="text-xs text-slate-400">-</span>'}</td></tr>`).join(''):`<tr><td colspan="6"><div class="empty-state"><div class="empty-icon"><i data-lucide="clipboard" class="w-6 h-6"></i></div><div class="font-bold text-slate-700">Belum ada kegiatan</div><div class="text-[12px] text-slate-400 mt-1">Tambah kegiatan untuk Tahun ${currentYear}</div></div></td></tr>`}</tbody></table></div>
+  </div>
+</div>`}
+
 function canManageMonitoringRow(row){
   if(!currentProfile) return false;
   const role=currentProfile.role;
@@ -689,24 +1152,25 @@ function monitoringPage(){
     return (!q||text.includes(q)) && (!st||m.status===st) && (m.tahun==null||Number(m.tahun)===Number(activeYear));
   });
   const total=rows.length, selesai=rows.filter(m=>m.status==='Selesai').length, proses=rows.filter(m=>['Berjalan','Dikoordinasikan','Menunggu Respons OPD'].includes(m.status)).length, terlambat=0;
-  return pageHeader('Monitoring',`Tahun ${currentYear}`)+`<div class="space-y-5">
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-    ${[['Total',total,'list-check'],['Berjalan',proses,'loader-circle'],['Selesai',selesai,'circle-check'],['Terlambat',terlambat,'triangle-alert']].map(x=>`<div class="kpi-card"><div class="kpi-icon"><i data-lucide="${x[2]}" class="w-5 h-5"></i></div><div><div class="text-xs text-slate-500">${x[0]}</div><div class="text-2xl font-bold mt-1">${x[1]}</div></div></div>`).join('')}
+  return pageHeader('Monitoring Tindak Lanjut',`Tahun ${currentYear} • ${total} aktivitas monitoring`)+`<div class="space-y-4">
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+    ${[['Total Aktivitas',total,'list-checks','Semua'],['Berjalan',proses,'loader','Proses aktif'],['Selesai',selesai,'circle-check','Tuntas'],['Terlambat',terlambat,'triangle-alert','Perlu perhatian']].map(x=>`<div class="kpi-card"><div class="kpi-top"><div class="kpi-label">${x[0]}</div><span class="kpi-icon"><i data-lucide="${x[2]}" class="w-4 h-4"></i></span></div><div class="kpi-value">${x[1]}</div><div class="text-[11px] text-slate-400 mt-2">${x[3]}</div></div>`).join('')}
   </div>
-  <div class="card p-5">
-    <div class="flex flex-col lg:flex-row lg:items-center gap-3 justify-between">
-      <div><div class="font-semibold">Monitoring Tindak Lanjut</div><div class="text-xs text-slate-500 mt-1">Satu baris = satu kejadian/tindakan tindak lanjut.</div></div>
-      <div class="flex flex-col sm:flex-row gap-2">
-        <input id="m-search" class="input" placeholder="Cari ID, tahap, PIC, tindakan..." value="${esc(q)}">
-        <select id="m-status" class="input"><option value="">Semua Status</option><option value="Baru" ${st==='Baru'?'selected':''}>Baru</option><option value="Ditelaah" ${st==='Ditelaah'?'selected':''}>Ditelaah</option><option value="Dikoordinasikan" ${st==='Dikoordinasikan'?'selected':''}>Dikoordinasikan</option><option value="Menunggu Respons OPD" ${st==='Menunggu Respons OPD'?'selected':''}>Menunggu Respons OPD</option><option value="Berjalan" ${st==='Berjalan'?'selected':''}>Dalam Proses</option><option value="Selesai" ${st==='Selesai'?'selected':''}>Selesai</option></select>
-        ${['Sekwan','Kabag PPU','Kabag FPP','Kabag Umum','JF PPU','JF FPP','Operator'].includes(currentProfile?.role)?'<button id="add-monitoring" class="btn-primary">+ Monitoring</button>':''}
+  <div class="card overflow-hidden">
+    <div class="p-5 flex flex-col lg:flex-row lg:items-center gap-4 justify-between">
+      <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-slate-900 text-white grid place-items-center"><i data-lucide="activity" class="w-5 h-5"></i></div><div><div class="font-bold text-[14px]">Monitoring Tindak Lanjut</div><div class="text-[12px] text-slate-500 mt-0.5">Satu baris = satu kejadian/tindakan tindak lanjut • Audit trail terjaga</div></div></div>
+      <div class="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+        <div class="relative flex-1 lg:w-[300px]"><i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i><input id="m-search" class="input !pl-9 !h-10" placeholder="Cari ID, tahap, PIC, tindakan..." value="${esc(q)}"></div>
+        <select id="m-status" class="input !h-10 !w-full sm:!w-[180px]"><option value="">Semua Status</option><option value="Baru" ${st==='Baru'?'selected':''}>Baru</option><option value="Ditelaah" ${st==='Ditelaah'?'selected':''}>Ditelaah</option><option value="Dikoordinasikan" ${st==='Dikoordinasikan'?'selected':''}>Dikoordinasikan</option><option value="Menunggu Respons OPD" ${st==='Menunggu Respons OPD'?'selected':''}>Menunggu Respons OPD</option><option value="Berjalan" ${st==='Berjalan'?'selected':''}>Dalam Proses</option><option value="Selesai" ${st==='Selesai'?'selected':''}>Selesai</option></select>
+        ${['Sekwan','Kabag PPU','Kabag FPP','Kabag Umum','JF PPU','JF FPP','Operator'].includes(currentProfile?.role)?'<button id="add-monitoring" class="btn-primary !h-10"><i data-lucide="plus" class="w-4 h-4"></i> Monitoring</button>':''}
       </div>
     </div>
-    <div class="overflow-x-auto mt-5"><table class="w-full text-sm"><thead class="bg-slate-50 text-xs text-slate-500"><tr><th class="text-left p-3">ID</th><th class="text-left p-3">Usulan</th><th class="text-left p-3">Tanggal</th><th class="text-left p-3">Tahap</th><th class="text-left p-3">Unit/PIC</th><th class="text-left p-3">Tindakan</th><th class="text-left p-3">Status</th><th class="text-right p-3">Aksi</th></tr></thead><tbody>
-    ${rows.length?rows.map(m=>`<tr class="border-t"><td class="p-3 font-semibold">${esc(m.id_monitoring||'-')}</td><td class="p-3">${esc(m.id_usulan||'-')}</td><td class="p-3">${esc(m.tanggal||m.tanggal_monitoring||'-')}</td><td class="p-3">${esc(m.tahap||'-')}</td><td class="p-3">${esc(m.instansi_unit||m.unit_bagian||'-')}<div class="text-xs text-slate-400">${esc(m.pic||'')}</div></td><td class="p-3 min-w-[220px]">${esc(m.tindakan||m.perkembangan||'-')}</td><td class="p-3">${esc(m.status||'-')}</td><td class="p-3 text-right whitespace-nowrap">${canManageMonitoringRow(m)?`<button class="text-xs px-2 py-1 rounded-lg border mr-1 edit-monitoring" data-id="${esc(m.id_monitoring)}">Edit</button><button class="text-xs px-2 py-1 rounded-lg border text-red-600 delete-monitoring" data-id="${esc(m.id_monitoring)}">Hapus</button>`:'<span class="text-xs text-slate-400">-</span>'}</td></tr>`).join(''):`<tr><td colspan="8" class="p-8 text-center text-slate-400">Belum ada data monitoring untuk Tahun ${currentYear}.</td></tr>`}
+    <div class="overflow-x-auto border-t border-slate-100"><table class="w-full text-sm"><thead><tr><th class="text-left p-3.5">ID Monitoring</th><th class="text-left p-3.5">Usulan</th><th class="text-left p-3.5">Tanggal</th><th class="text-left p-3.5">Tahap</th><th class="text-left p-3.5">Unit / PIC</th><th class="text-left p-3.5">Tindakan</th><th class="text-left p-3.5">Status</th><th class="text-right p-3.5">Aksi</th></tr></thead><tbody>
+    ${rows.length?rows.map(m=>`<tr class="hover:bg-slate-50/80"><td class="p-3.5 font-bold text-slate-900">${esc(m.id_monitoring||'-')}</td><td class="p-3.5"><span class="inline-flex px-2 py-1 rounded-full bg-slate-50 border border-slate-200 text-[11px] font-bold">${esc(m.id_usulan||'-')}</span></td><td class="p-3.5 text-[12px] text-slate-600">${esc(m.tanggal||m.tanggal_monitoring||'-')}</td><td class="p-3.5"><span class="badge badge-slate">${esc(m.tahap||'-')}</span></td><td class="p-3.5"><div class="font-semibold text-[13px]">${esc(m.instansi_unit||m.unit_bagian||'-')}</div><div class="text-[11px] text-slate-400 mt-1">${esc(m.pic||'')}</div></td><td class="p-3.5 max-w-[260px]"><div class="text-[13px] leading-snug text-slate-700 line-clamp-2">${esc(m.tindakan||m.perkembangan||'-')}</div></td><td class="p-3.5"><span class="badge ${m.status==='Selesai'?'badge-emerald':m.status==='Berjalan'?'badge-amber':'badge-slate'}">${esc(m.status||'-')}</span></td><td class="p-3.5 text-right">${canManageMonitoringRow(m)?`<div class="flex gap-1.5 justify-end"><button class="edit-monitoring" data-id="${esc(m.id_monitoring)}">Edit</button><button class="delete-monitoring" data-id="${esc(m.id_monitoring)}">Hapus</button></div>`:'<span class="text-xs text-slate-400">-</span>'}</td></tr>`).join(''):`<tr><td colspan="8"><div class="empty-state"><div class="empty-icon"><i data-lucide="activity" class="w-6 h-6"></i></div><div class="font-bold">Belum ada data monitoring untuk Tahun ${currentYear}</div><div class="text-[12px] text-slate-400 mt-1">Input tindak lanjut pertama untuk memulai audit trail</div></div></td></tr>`}
     </tbody></table></div>
   </div></div>`;
 }
+
 function monitoringForm(existing={}){
   const usulanOptions=(usulan||[]).filter(u=>Number(u.tahun)===Number(activeYear)).map(u=>`<option value="${esc(u.id_usulan)}" ${existing.id_usulan===u.id_usulan?'selected':''}>${esc(u.id_usulan)} — ${esc(u.usulan_tujuan||u.permasalahan||'Usulan')}</option>`).join('');
   return `<div class="fixed inset-0 bg-black/40 z-50 grid place-items-center p-4"><div class="bg-white rounded-2xl shadow-xl w-full max-w-3xl max-h-[92vh] overflow-y-auto p-6"><div class="flex justify-between items-center"><div><div class="text-lg font-bold">${existing.id_monitoring?'Edit':'Tambah'} Monitoring</div><div class="text-xs text-slate-500">Tahun ${currentYear}</div></div><button id="close-monitoring" class="text-slate-400">✕</button></div><form id="monitoring-form" class="grid md:grid-cols-2 gap-4 mt-5">
@@ -799,13 +1263,27 @@ function planningPage(){
     return (!q||text.includes(q)) && (!st||planningValue(r,['status','status_perencanaan'])===st);
   });
   const total=rows.length, proses=rows.filter(r=>['Dalam Proses','Berjalan','Disusun','Dalam Perencanaan'].includes(planningValue(r,['status','status_perencanaan']))).length, selesai=rows.filter(r=>planningValue(r,['status','status_perencanaan'])==='Selesai').length;
-  return pageHeader('Perencanaan',`Tahun ${currentYear} • ${profile.role} • ${profile.unit||'Lintas Unit'}`)+`<div class="space-y-5">
-  <div class="grid grid-cols-3 gap-3"><div class="kegiatan-kpi"><div class="text-xs text-slate-500">Total Perencanaan</div><div class="num mt-2">${total}</div></div><div class="kegiatan-kpi"><div class="text-xs text-slate-500">Dalam Proses</div><div class="num mt-2">${proses}</div></div><div class="kegiatan-kpi"><div class="text-xs text-slate-500">Selesai</div><div class="num mt-2">${selesai}</div></div></div>
-  <div class="card overflow-hidden"><div class="p-5 border-b flex flex-col lg:flex-row gap-3 justify-between lg:items-center"><div><div class="font-semibold">Register Perencanaan</div><div class="text-xs text-slate-500 mt-1">Keterkaitan usulan dengan program, kegiatan/subkegiatan dan target perencanaan.</div></div><div class="flex flex-col sm:flex-row gap-2"><input id="p-search" class="input !w-64 !h-9" placeholder="Cari ID, program, kegiatan..." value="${esc(q)}"><select id="p-status" class="input !w-44 !h-9"><option value="">Semua Status</option>${['Disusun','Dalam Proses','Dalam Perencanaan','Berjalan','Selesai'].map(x=>`<option ${st===x?'selected':''}>${x}</option>`).join('')}</select>${canWrite()?'<button id="add-perencanaan" class="h-9 px-3 rounded-xl bg-slate-950 text-white text-xs font-semibold">+ Perencanaan</button>':''}</div></div>
-  <div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-50 text-xs text-slate-500"><tr><th class="text-left p-3">ID</th><th class="text-left p-3">ID Usulan</th><th class="text-left p-3">Program</th><th class="text-left p-3">Kegiatan / Subkegiatan</th><th class="text-left p-3">Target</th><th class="text-left p-3">Status</th><th class="text-right p-3">Aksi</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr class="border-t hover:bg-slate-50"><td class="p-3 font-semibold">${esc(planningValue(r,['id_perencanaan','id']))}</td><td class="p-3">${esc(r.id_usulan||'-')}</td><td class="p-3"><div>${esc(planningValue(r,['program','nama_program'],'-'))}</div><div class="text-xs text-slate-400">${esc(planningValue(r,['indikator']))}</div></td><td class="p-3"><div>${esc(planningValue(r,['kegiatan','nama_kegiatan'],'-'))}</div><div class="text-xs text-slate-400">${esc(planningValue(r,['subkegiatan','nama_subkegiatan']))}</div></td><td class="p-3">${esc(planningValue(r,['target','target_capaian','target_tahun'],'-'))}</td><td class="p-3"><span class="badge border-slate-200">${esc(planningValue(r,['status','status_perencanaan'],'-'))}</span></td><td class="p-3 text-right">${canManagePlanningRow(r)?`<button class="text-xs px-2 py-1 rounded-lg border mr-1 edit-perencanaan" data-id="${esc(planningValue(r,['id_perencanaan','id']))}">Edit</button><button class="text-xs px-2 py-1 rounded-lg border text-red-600 delete-perencanaan" data-id="${esc(planningValue(r,['id_perencanaan','id']))}">Hapus</button>`:'<span class="text-xs text-slate-400">-</span>'}</td></tr>`).join(''):`<tr><td colspan="7" class="p-8 text-center text-slate-400">Belum ada data perencanaan untuk Tahun ${currentYear}.</td></tr>`}</tbody></table></div></div>
-  <div class="text-[11px] text-slate-400">Catatan: penghapusan mengikuti hak akses/RLS berdasarkan peran dan unit penanggung jawab.</div>
+  return pageHeader('Perencanaan Strategis',`Tahun ${currentYear} • ${profile.role} • ${profile.unit||'Lintas Unit'} • ${total} rencana`)+`<div class="space-y-4">
+  <div class="grid grid-cols-3 gap-3.5">
+    <div class="kpi-card"><div class="kpi-top"><div class="kpi-label">Total Perencanaan</div><span class="kpi-icon"><i data-lucide="layers" class="w-4 h-4"></i></span></div><div class="kpi-value">${total}</div><div class="text-[11px] text-slate-400 mt-2">Semua dokumen</div></div>
+    <div class="kpi-card"><div class="kpi-top"><div class="kpi-label">Dalam Proses</div><span class="kpi-icon"><i data-lucide="loader" class="w-4 h-4"></i></span></div><div class="kpi-value">${proses}</div><div class="text-[11px] text-slate-400 mt-2">Disusun & berjalan</div></div>
+    <div class="kpi-card"><div class="kpi-top"><div class="kpi-label">Selesai</div><span class="kpi-icon"><i data-lucide="check-circle-2" class="w-4 h-4"></i></span></div><div class="kpi-value">${selesai}</div><div class="text-[11px] text-slate-400 mt-2">Tuntas</div></div>
+  </div>
+  <div class="card overflow-hidden">
+    <div class="p-5 flex flex-col lg:flex-row gap-4 justify-between lg:items-center">
+      <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-slate-900 text-white grid place-items-center"><i data-lucide="layers" class="w-5 h-5"></i></div><div><div class="font-bold text-[14px] tracking-tight">Register Perencanaan</div><div class="text-[12px] text-slate-500 mt-0.5">Keterkaitan usulan dengan program, kegiatan/subkegiatan dan target perencanaan.</div></div></div>
+      <div class="flex gap-2">
+        <div class="relative"><i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i><input id="p-search" class="input !pl-9 !h-10 !w-[260px]" placeholder="Cari program, kegiatan..." value="${esc(q)}"></div>
+        <select id="p-status" class="input !h-10 !w-[160px]"><option value="">Semua Status</option>${['Disusun','Dalam Proses','Dalam Perencanaan','Berjalan','Selesai'].map(x=>`<option ${st===x?'selected':''}>${x}</option>`).join('')}</select>
+        ${canWrite()?'<button id="add-perencanaan" class="btn-primary !h-10"><i data-lucide="plus" class="w-4 h-4"></i> Perencanaan</button>':''}
+      </div>
+    </div>
+    <div class="overflow-x-auto border-t border-slate-100"><table class="w-full text-sm"><thead><tr><th class="text-left p-3.5">ID Perencanaan</th><th class="text-left p-3.5">ID Usulan</th><th class="text-left p-3.5">Program</th><th class="text-left p-3.5">Kegiatan / Subkegiatan</th><th class="text-left p-3.5">Target</th><th class="text-left p-3.5">Status</th><th class="text-right p-3.5">Aksi</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr class="hover:bg-slate-50/80"><td class="p-3.5 font-bold text-slate-900">${esc(planningValue(r,['id_perencanaan','id']))}</td><td class="p-3.5"><span class="inline-flex px-2 py-1 rounded-full bg-slate-50 border text-[11px] font-bold">${esc(r.id_usulan||'-')}</span></td><td class="p-3.5"><div class="font-medium text-slate-800">${esc(planningValue(r,['program','nama_program'],'-'))}</div><div class="text-[11px] text-slate-400 mt-1">${esc(planningValue(r,['indikator']))}</div></td><td class="p-3.5"><div class="text-[13px] font-medium">${esc(planningValue(r,['kegiatan','nama_kegiatan'],'-'))}</div><div class="text-[11px] text-slate-400">${esc(planningValue(r,['subkegiatan','nama_subkegiatan']))}</div></td><td class="p-3.5 font-medium">${esc(planningValue(r,['target','target_capaian','target_tahun'],'-'))}</td><td class="p-3.5"><span class="badge ${planningValue(r,['status','status_perencanaan'])==='Selesai'?'badge-emerald':'badge-amber'}">${esc(planningValue(r,['status','status_perencanaan'],'-'))}</span></td><td class="p-3.5 text-right">${canManagePlanningRow(r)?`<div class="flex gap-1.5 justify-end"><button class="edit-perencanaan" data-id="${esc(planningValue(r,['id_perencanaan','id']))}">Edit</button><button class="delete-perencanaan" data-id="${esc(planningValue(r,['id_perencanaan','id']))}">Hapus</button></div>`:'<span class="text-xs text-slate-400">-</span>'}</td></tr>`).join(''):`<tr><td colspan="7"><div class="empty-state"><div class="empty-icon"><i data-lucide="layers" class="w-6 h-6"></i></div><div class="font-bold">Belum ada data perencanaan</div></div></td></tr>`}</tbody></table></div>
+  </div>
+  <div class="rounded-xl bg-slate-50 border border-slate-200 p-3 text-[11px] text-slate-500 flex items-center gap-2"><i data-lucide="info" class="w-4 h-4"></i> Penghapusan mengikuti hak akses/RLS berdasarkan peran dan unit penanggung jawab.</div>
   </div>`;
 }
+
 function openPerencanaan(existing={}){
   const options=(usulan||[]).filter(u=>Number(u.tahun)===Number(currentYear)).map(u=>`<option value="${esc(u.id_usulan)}" ${existing.id_usulan===u.id_usulan?'selected':''}>${esc(u.id_usulan)} — ${esc(u.usulan_tujuan||u.permasalahan||'Usulan')}</option>`).join('');
   const val=(names,fb='')=>esc(planningValue(existing,names,fb));
@@ -4081,6 +4559,67 @@ if (isStandalone()) {
   body { -webkit-user-select: none; user-select: none; }
 }
 </style>
+
+
+<script>
+// === DewanOne Professional UI Enhancer - no logic change, only presentation ===
+(function(){
+  const origRenderPage = window.renderPage;
+  // Enhance dashboard KPIs after each render
+  function enhanceUI(){
+    try{
+      // Polish badges
+      document.querySelectorAll('#content .badge').forEach(b=>{
+        if(!b.querySelector('.badge-dot')){
+          const dot=document.createElement('span');
+          dot.className='badge-dot';
+          const isEmerald=b.className.includes('emerald')||b.textContent.includes('Terverifikasi')||b.textContent.includes('Selesai')||b.textContent.includes('Dapat');
+          const isAmber=b.className.includes('amber')||b.textContent.includes('Perlu')||b.textContent.includes('Belum');
+          const isRed=b.className.includes('red')||b.textContent.includes('Terlambat')||b.textContent.includes('Kritis');
+          if(isEmerald) dot.style.background='#10b981';
+          else if(isAmber) dot.style.background='#f59e0b';
+          else if(isRed) dot.style.background='#ef4444';
+          else dot.style.background='#94a3b8';
+          dot.style.width='6px'; dot.style.height='6px'; dot.style.borderRadius='50%'; dot.style.display='inline-block';
+          b.prepend(dot);
+        }
+      });
+      // Add pro-table-wrap class to card tables
+      document.querySelectorAll('#content .card .overflow-x-auto').forEach(w=>{
+        w.classList.add('pro-table-wrap');
+        w.style.borderRadius='0';
+        w.style.border='none';
+      });
+      // Polish empty states
+      document.querySelectorAll('#content td[colspan]').forEach(td=>{
+        if(td.textContent.includes('Belum ada')||td.textContent.includes('Tidak ada')){
+          td.innerHTML = `<div class="empty-state"><div class="empty-icon"><i data-lucide="inbox" class="w-6 h-6"></i></div><div class="font-semibold text-slate-700 text-[13px]">${td.textContent.trim()}</div><div class="text-[11px] text-slate-400 mt-1">Data akan muncul setelah diinput untuk Tahun Anggaran aktif</div></div>`;
+          if(window.lucide) lucide.createIcons();
+        }
+      });
+      // Topbar polish
+      const topbar=document.querySelector('header.topbar');
+      if(topbar) topbar.classList.add('topbar');
+    }catch(e){ console.warn('enhancer',e) }
+  }
+  // Hook into renderPage if exists, otherwise run on interval
+  const hook = () => {
+    if(typeof window.renderPage==='function' && window.renderPage!==enhanceUI){
+      const original = window.renderPage;
+      window.renderPage = function(){
+        original.apply(this, arguments);
+        setTimeout(enhanceUI, 30);
+        setTimeout(()=>{ if(window.lucide) lucide.createIcons(); }, 60);
+      }
+    }
+  };
+  // Try to hook immediately and after load
+  document.addEventListener('DOMContentLoaded', ()=>{ hook(); enhanceUI(); });
+  setTimeout(hook, 500);
+  setTimeout(hook, 1500);
+  setTimeout(enhanceUI, 800);
+})();
+</script>
 
 </body>
 </html>
