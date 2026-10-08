@@ -5958,8 +5958,10 @@ function editUsulan(id){
   };
 }
 function editKegiatan(id){const k=kegiatan.find(x=>x.id_kegiatan===id);if(!k)return;openModal('Edit Kegiatan',`Tahun ${currentYear} • ${k.id_kegiatan}`,`<form id="form-edit-k" class="space-y-4"><label class="text-xs font-semibold block">Jenis Kegiatan<input id="ek-jenis" class="input mt-1" value="${esc(k.jenis_kegiatan||'')}" required></label><label class="text-xs font-semibold block">Kegiatan/Tugas<textarea id="ek-tugas" class="input mt-1 h-24 py-2" required>${esc(k.kegiatan_tugas||'')}</textarea></label><label class="text-xs font-semibold block">Status<select id="ek-status" class="input mt-1">${['Belum','Berjalan','Selesai','Ditunda'].map(x=>`<option ${k.status===x?'selected':''}>${x}</option>`).join('')}</select></label><div class="flex justify-end gap-2"><button type="button" id="cancel-edit-k" class="h-10 px-4 rounded-xl border">Batal</button><button class="h-10 px-4 rounded-xl bg-slate-950 text-white font-semibold">Simpan Perubahan</button></div></form>`);document.getElementById('cancel-edit-k').onclick=closeModal;document.getElementById('form-edit-k').onsubmit=async e=>{e.preventDefault();const patch={jenis_kegiatan:document.getElementById('ek-jenis').value.trim(),kegiatan_tugas:document.getElementById('ek-tugas').value.trim(),status:document.getElementById('ek-status').value,diperbarui_oleh:session.user.id};const {data,error}=await sb.from('register_kegiatan').update(patch).eq('id_kegiatan',id).select().single();if(error){toast(error.message,false);return}kegiatan=kegiatan.map(x=>x.id_kegiatan===id?data:x);closeModal();renderPage();toast('Kegiatan diperbarui')}}
-function openUsulan(source=null){
+async function openUsulan(source=null){
   const sources=v995Sources||[];
+  if(!(v9954.kamus||[]).length){ try{ await loadV9954Master(); }catch(e){ console.warn('Kamus Usulan:',e) } }
+  const kamus=(v9954.kamus||[]).filter(k=>k.aktif!==false && k.status!=='Arsip' && (!k.tahun_mulai || Number(k.tahun_mulai)<=Number(currentYear)) && (!k.tahun_selesai || Number(k.tahun_selesai)>=Number(currentYear)));
   const sourceId=source?.id||'';
   const sourceType=source?.jenis_sumber||'';
   const sourceRegister=v995RegisterSourceValue(sourceType);
@@ -5971,10 +5973,11 @@ function openUsulan(source=null){
   const selectedAnggota=source?.anggota_dprd||'';
   const selectedDapil=source?.dapil||'';
   const selectedKelompok=source?.kelompok_sasaran||'';
+  const kamusOptions=kamus.map(k=>`<option value="${esc(k.id)}" data-code="${esc(k.kode_kamus||'')}" data-name="${esc(k.nama_usulan||'')}" data-program-code="${esc(k.kode_program_sipd||'')}" data-program="${esc(k.nama_program_sipd||'')}" data-kegiatan-code="${esc(k.kode_kegiatan_sipd||'')}" data-kegiatan="${esc(k.nama_kegiatan_sipd||'')}" data-sub-code="${esc(k.kode_subkegiatan_sipd||'')}" data-sub="${esc(k.nama_subkegiatan_sipd||'')}" data-opd="${esc(k.nama_opd_sipd||'')}" data-indikator="${esc(k.indikator||'')}" data-satuan="${esc(k.satuan||'')}" data-target="${esc(k.target_default||'')}" data-masalah="${esc(k.uraian_masalah||'')}" data-usulan="${esc(k.uraian_usulan||'')}">${esc(k.kode_kamus||'-')} • ${esc(k.nama_usulan||'-')}</option>`).join('');
   openModal('Input Pokir / Register Usulan DPRD',`Tahun ${currentYear} • ${source?`dari ${source.kode_sumber}`:`Role ${profile.role}`}`,`<form id="form-usulan" class="space-y-5">
   <div class="rounded-2xl border border-indigo-200 bg-indigo-50 p-4 text-xs text-indigo-900">
     <div class="font-bold text-sm">Form Pokir SIPD-RI Compatible</div>
-    <div class="mt-1">Input sekali di DewanOne. Data yang sudah diverifikasi dapat diekspor untuk proses SIPD-RI. ID Usulan DewanOne menjadi kunci keterlacakan.</div>
+    <div class="mt-1">Input sekali di DewanOne. Kamus Usulan membantu standardisasi, tetapi <b>bukan whitelist</b>. Pokir yang tidak ada di Kamus tetap dapat diregister dan ditelaah.</div>
   </div>
   ${source?`<div class="rounded-2xl border border-slate-200 bg-slate-50 p-3"><div class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Sumber Aspirasi</div><div class="font-semibold text-sm mt-1">${esc(source.kode_sumber)} • ${esc(source.jenis_sumber)}</div><div class="text-xs text-slate-500 mt-1">${esc(source.anggota_dprd||'-')} • ${esc(source.dapil||'-')}</div><div class="text-xs text-slate-500 mt-1">${esc(source.lokasi||'-')} • ${esc(source.desa_kelurahan||'-')} • ${esc(source.kecamatan||'-')}</div><input type="hidden" id="f-source-id" value="${esc(source.id)}"></div>`:`<div class="grid md:grid-cols-2 gap-4"><label class="text-xs font-semibold">Sumber Aspirasi<select id="f-source-id" class="input mt-1"><option value="">Tidak dihubungkan</option>${sources.map(x=>`<option value="${esc(x.id)}">${esc(x.kode_sumber)} • ${esc(x.jenis_sumber)}${x.anggota_dprd?' • '+esc(x.anggota_dprd):''}</option>`).join('')}</select></label><label class="text-xs font-semibold">Sumber Register<select id="f-sumber" class="input mt-1"><option>Reses</option><option selected>Pokir</option><option>Aspirasi Masyarakat</option><option>AKD/Fraksi</option><option>Pimpinan DPRD</option><option>Kunjungan Kerja</option><option>Lainnya</option></select></label></div>`}
   <div class="rounded-2xl border border-slate-200 p-4 space-y-4">
@@ -6012,16 +6015,23 @@ function openUsulan(source=null){
     </div>
   </div>
   <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4 space-y-4">
-    <div class="font-bold text-sm text-amber-900">D. Penyelarasan SIPD-RI / Perencanaan</div>
-    <div class="text-xs text-amber-800">Kolom berikut boleh dikosongkan pada tahap awal. Setelah telaah, DewanOne mengarahkan usulan ke kamus dan nomenklatur perencanaan yang sesuai.</div>
+    <div class="font-bold text-sm text-amber-900">D. Kamus Usulan & Penyelarasan SIPD-RI</div>
+    <div class="text-xs text-amber-800">Pilih Kamus bila usulan memiliki padanan. Jika tidak ada, pilih <b>Di luar Kamus</b>. Sistem tidak membuat kode SIPD fiktif; pemetaan resmi dilakukan melalui telaah.</div>
     <div class="grid md:grid-cols-2 gap-4">
-      <label class="text-xs font-semibold">Kode Kamus Usulan<input id="f-kamus" class="input mt-1" placeholder="Diisi setelah pemetaan kamus"></label>
-      <label class="text-xs font-semibold">Kode Program<input id="f-program-kode" class="input mt-1"></label>
+      <label class="text-xs font-semibold">Status Pemetaan<select id="f-kamus-mode" class="input mt-1"><option value="KAMUS">Gunakan Kamus Usulan</option><option value="NON_KAMUS">Di luar Kamus / Usulan Baru</option></select></label>
+      <label class="text-xs font-semibold">Pilih Kamus Usulan<select id="f-kamus-select" class="input mt-1"><option value="">Pilih Kamus...</option>${kamusOptions}</select></label>
+    </div>
+    <div id="f-nonkamus-note" class="hidden rounded-xl border border-orange-200 bg-white p-3 text-xs text-orange-800"><b>Jalur Non-Kamus aktif.</b> Usulan tetap sah diregister. Setelah verifikasi dan telaah, petugas dapat memetakan ke nomenklatur SIPD-RI resmi yang sesuai atau mengusulkannya sebagai kandidat Kamus baru.</div>
+    <div id="f-kamus-preview" class="rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-600">Belum memilih Kamus.</div>
+    <div class="grid md:grid-cols-2 gap-4">
+      <label class="text-xs font-semibold">Kode Kamus Usulan<input id="f-kamus" class="input mt-1" placeholder="Otomatis dari Kamus / kosong bila Non-Kamus" readonly></label>
+      <label class="text-xs font-semibold">OPD dari Kamus<input id="f-kamus-opd" class="input mt-1" placeholder="Akan terisi bila tersedia" readonly></label>
+      <label class="text-xs font-semibold">Kode Program<input id="f-program-kode" class="input mt-1" placeholder="Hanya dari nomenklatur resmi"></label>
       <label class="text-xs font-semibold">Nama Program<input id="f-program" class="input mt-1"></label>
       <label class="text-xs font-semibold">Kode Kegiatan<input id="f-kegiatan-kode" class="input mt-1"></label>
       <label class="text-xs font-semibold">Nama Kegiatan<input id="f-kegiatan" class="input mt-1"></label>
       <label class="text-xs font-semibold">Kode Subkegiatan<input id="f-subkegiatan-kode" class="input mt-1"></label>
-      <label class="text-xs font-semibold md:col-span-2">Nama Subkegiatan<input id="f-subkegiatan" class="input mt-1"></label>
+      <label class="text-xs font-semibold">Nama Subkegiatan<input id="f-subkegiatan" class="input mt-1"></label>
     </div>
   </div>
   <div class="rounded-2xl border border-slate-200 p-4">
@@ -6034,9 +6044,25 @@ function openUsulan(source=null){
   <div class="flex justify-end gap-2 pt-1"><button type="button" id="cancel-form" class="h-10 px-4 rounded-xl border text-sm">Batal</button><button class="h-10 px-4 rounded-xl bg-slate-950 text-white text-sm font-semibold">Simpan Pokir</button></div></form>`);
   const sourceSelect=document.getElementById('f-source-id');
   if(sourceSelect&&!source){sourceSelect.addEventListener('change',()=>{const s=sources.find(x=>x.id===sourceSelect.value);if(!s)return;document.getElementById('f-sumber').value=v995RegisterSourceValue(s.jenis_sumber)||'Pokir';document.getElementById('f-pengusul').value=s.anggota_dprd||s.kelompok_sasaran||'';document.getElementById('f-dapil').value=s.dapil||'';document.getElementById('f-kelompok').value=s.kelompok_sasaran||'';document.getElementById('f-masalah').value=s.permasalahan||'';document.getElementById('f-usulan').value=s.aspirasi||'';document.getElementById('f-alamat').value=s.lokasi||'';document.getElementById('f-desa').value=s.desa_kelurahan||'';document.getElementById('f-kec').value=s.kecamatan||''})}
+  const mode=document.getElementById('f-kamus-mode'), select=document.getElementById('f-kamus-select'), note=document.getElementById('f-nonkamus-note'), preview=document.getElementById('f-kamus-preview');
+  const fillKamus=()=>{
+    const isNon=mode.value==='NON_KAMUS'; note.classList.toggle('hidden',!isNon); select.disabled=isNon;
+    if(isNon){ select.value=''; ['f-kamus','f-kamus-opd','f-program-kode','f-program','f-kegiatan-kode','f-kegiatan','f-subkegiatan-kode','f-subkegiatan'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''}); preview.innerHTML='<b>NON-KAMUS</b> • Usulan baru di luar katalog. Nomenklatur SIPD belum ditetapkan oleh Kamus DewanOne.'; return; }
+    const k=kamus.find(x=>x.id===select.value); if(!k){preview.textContent='Belum memilih Kamus.';return}
+    document.getElementById('f-kamus').value=k.kode_kamus||''; document.getElementById('f-kamus-opd').value=k.nama_opd_sipd||'';
+    document.getElementById('f-program-kode').value=k.kode_program_sipd||''; document.getElementById('f-program').value=k.nama_program_sipd||'';
+    document.getElementById('f-kegiatan-kode').value=k.kode_kegiatan_sipd||''; document.getElementById('f-kegiatan').value=k.nama_kegiatan_sipd||'';
+    document.getElementById('f-subkegiatan-kode').value=k.kode_subkegiatan_sipd||''; document.getElementById('f-subkegiatan').value=k.nama_subkegiatan_sipd||'';
+    if(!document.getElementById('f-indikator').value && k.indikator)document.getElementById('f-indikator').value=k.indikator;
+    if(!document.getElementById('f-satuan').value && k.satuan)document.getElementById('f-satuan').value=k.satuan;
+    preview.innerHTML=`<b>${esc(k.kode_kamus||'-')}</b> • ${esc(k.nama_usulan||'-')}<div class="mt-1 text-slate-500">${esc(k.nama_program_sipd||'-')} → ${esc(k.nama_kegiatan_sipd||'-')} → ${esc(k.nama_subkegiatan_sipd||'-')}</div>`;
+  };
+  mode.onchange=fillKamus; select.onchange=fillKamus;
   document.getElementById('cancel-form').onclick=closeModal;
   document.getElementById('form-usulan').onsubmit=saveUsulan;
+  fillKamus();
 }
+
 async function saveUsulan(e){
   e.preventDefault();
   const unit=document.getElementById('f-unit').value;
@@ -6051,15 +6077,22 @@ async function saveUsulan(e){
     permasalahan:document.getElementById('f-masalah').value.trim(),nama_usulan:document.getElementById('f-usulan').value.trim(),kelompok_sasaran:document.getElementById('f-kelompok')?.value.trim()||null,indikator:document.getElementById('f-indikator')?.value.trim()||null,
     kabupaten_kota:document.getElementById('f-kab')?.value.trim()||'Kabupaten Kapuas Hulu',kecamatan:document.getElementById('f-kec').value.trim(),desa_kelurahan:document.getElementById('f-desa').value.trim(),lokasi:document.getElementById('f-alamat').value.trim(),alamat_lokasi:document.getElementById('f-alamat').value.trim(),volume,satuan:document.getElementById('f-satuan').value.trim()||null,pagu:anggaran,anggaran,
     jenis_belanja:document.getElementById('f-belanja')?.value||null,kode_kamus:document.getElementById('f-kamus')?.value.trim()||null,kode_program:document.getElementById('f-program-kode')?.value.trim()||null,nama_program:document.getElementById('f-program')?.value.trim()||null,kode_kegiatan:document.getElementById('f-kegiatan-kode')?.value.trim()||null,nama_kegiatan:document.getElementById('f-kegiatan')?.value.trim()||null,kode_subkegiatan:document.getElementById('f-subkegiatan-kode')?.value.trim()||null,nama_subkegiatan:document.getElementById('f-subkegiatan')?.value.trim()||null,
-    opd_tujuan:null,unit_bagian_penanggung_jawab:unit
+    opd_tujuan:null,unit_bagian_penanggung_jawab:unit,
+    mode_pemetaan_kamus:document.getElementById('f-kamus-mode')?.value||'NON_KAMUS',
+    kamus_usulan_id:document.getElementById('f-kamus-select')?.value||null
   };
-  const payload={id_usulan:id,tahun:currentYear,tanggal_masuk:new Date().toISOString().slice(0,10),pengusul:sipdDraft.pengusul,sumber:sipdDraft.sumber_usulan,jenis_usulan:sipdDraft.jenis_usulan,prioritas:sipdDraft.prioritas,permasalahan:sipdDraft.permasalahan,usulan_tujuan:sipdDraft.nama_usulan,lokasi:sipdDraft.lokasi,desa_kelurahan:sipdDraft.desa_kelurahan,kecamatan:sipdDraft.kecamatan,opd_tujuan:null,estimasi_nilai:anggaran,target_tindak_lanjut:document.getElementById('f-target').value||null,status:'Baru',status_sla:'On Track',hari_berjalan:0,level_eskalasi:'Normal',unit_bagian_penanggung_jawab:unit};
+  const payload={id_usulan:id,tahun:currentYear,tanggal_masuk:new Date().toISOString().slice(0,10),pengusul:sipdDraft.pengusul,sumber:sipdDraft.sumber_usulan,jenis_usulan:sipdDraft.jenis_usulan,prioritas:sipdDraft.prioritas,permasalahan:sipdDraft.permasalahan,usulan_tujuan:sipdDraft.nama_usulan,lokasi:sipdDraft.lokasi,desa_kelurahan:sipdDraft.desa_kelurahan,kecamatan:sipdDraft.kecamatan,opd_tujuan:null,estimasi_nilai:anggaran,target_tindak_lanjut:document.getElementById('f-target').value||null,status:'Baru',status_sla:'On Track',hari_berjalan:0,level_eskalasi:'Normal',unit_bagian_penanggung_jawab:unit,
+    status_pemetaan_kamus:sipdDraft.mode_pemetaan_kamus==='KAMUS'?'Terkait Kamus':'Non-Kamus - Perlu Telaah',catatan_pemetaan_kamus:sipdDraft.mode_pemetaan_kamus==='KAMUS'?'Dipilih dari Kamus Usulan DewanOne.':'Usulan berada di luar Kamus; wajib melalui verifikasi/telaah sebelum pemetaan SIPD-RI.'};
   const {data,error}=await sb.from('register_usulan').insert(payload).select().single();
   if(error){toast(error.message,false);return}
   // Tanpa perubahan schema: detail Pokir yang belum tersedia di register_usulan disimpan pada staging SIPD existing.
   const stage={batch_id:`DEWANONE-${currentYear}`,tahun:currentYear,kode_sipd:null,opd_kode:null,nama_opd:null,nama_usulan:sipdDraft.nama_usulan,sumber_usulan:sipdDraft.sumber_usulan,kode_program:sipdDraft.kode_program,nama_program:sipdDraft.nama_program,kode_kegiatan:sipdDraft.kode_kegiatan,nama_kegiatan:sipdDraft.nama_kegiatan,kode_subkegiatan:sipdDraft.kode_subkegiatan,nama_subkegiatan:sipdDraft.nama_subkegiatan,indikator:sipdDraft.indikator,target:null,satuan:sipdDraft.satuan,lokasi:sipdDraft.lokasi,volume:sipdDraft.volume,pagu:sipdDraft.pagu,raw_data:{...sipdDraft,source_id:sourceId},status_import:'Draft DewanOne',diunggah_oleh:session.user.id};
-  const {error:se}=await sb.from('stg_usulan_sipd').insert(stage);
+  const {data:stageSaved,error:se}=await sb.from('stg_usulan_sipd').insert(stage).select('id').single();
   if(se){await sb.from('register_usulan').delete().eq('id_usulan',id);toast('Usulan dibatalkan karena detail SIPD gagal disimpan: '+se.message,false);return}
+  if(sipdDraft.mode_pemetaan_kamus==='KAMUS' && sipdDraft.kamus_usulan_id){
+    const {error:ke}=await sb.from('register_usulan_kamus').insert({id_usulan:id,kamus_usulan_id:sipdDraft.kamus_usulan_id,peran:'Utama',tingkat_kecocokan:'Tepat',alasan_kecocokan:'Dipilih saat Register Usulan oleh operator.',dibuat_oleh:session.user.id});
+    if(ke){if(stageSaved?.id) await sb.from('stg_usulan_sipd').delete().eq('id',stageSaved.id);await sb.from('register_usulan').delete().eq('id_usulan',id);toast('Usulan dibatalkan karena relasi Kamus gagal disimpan: '+ke.message,false);return}
+  }
   if(sourceId){
     const src=sources.find(x=>x.id===sourceId);
     const roleMap={'Reses':'Hasil Reses','Pokir DPRD':'Dasar Pokir','AKD':'Hasil AKD','Dengar Pendapat':'Hasil Dengar Pendapat'};
