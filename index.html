@@ -415,6 +415,144 @@ select.input{ background-image: linear-gradient(45deg, transparent 50%, #64748b 
 <!-- iOS Splash Screens -->
 <link rel="apple-touch-startup-image" href="/icons/icon-512x512.png">
 
+
+<style id="contrast-fix-2026">
+/* === DewanOne Contrast Fix - High Readability 2026 === */
+:root{
+  --text: #0f172a;
+  --text-muted: #334155; /* was 64748b - darker for AA */
+  --text-faint: #475569; /* was 94a3b8 - now meets 4.5:1 */
+}
+
+/* Global low-contrast Tailwind overrides on light surfaces */
+.text-slate-400{color:#475569 !important;}
+.text-slate-500{color:#334155 !important;}
+.text-slate-400\/80, .text-slate-500\/80{color:#334155 !important;}
+
+/* Labels, subtitles, KPIs */
+.kpi-label{color:#1e293b !important; font-weight:700 !important;}
+.kpi-sub{color:#475569 !important; font-weight:500 !important;}
+.kpi-sub span{color:#334155 !important;}
+.section-label{color:#334155 !important; font-weight:800 !important; letter-spacing:0.08em !important;}
+.page-subtitle{color:#334155 !important;}
+#page-subtitle{color:#334155 !important;}
+
+/* Placeholders and disabled */
+.input::placeholder{color:#64748b !important; opacity:1 !important; font-weight:500 !important;}
+.input:disabled{color:#334155 !important; background:#f1f5f9 !important;}
+
+/* Table headers - always dark on light bg */
+.pro-table thead th,
+#content .card table thead th,
+table thead th,
+thead.bg-slate-50 th,
+.bg-slate-50 thead th{
+  color:#1e293b !important;
+  font-weight:700 !important;
+  background:#f8fafc !important;
+}
+.pro-table tbody td,
+#content .card table tbody td{
+  color:#1e293b !important;
+}
+
+/* Small secondary texts inside cards */
+.card .text-\[11px\].text-slate-400,
+.card .text-\[11px\].text-slate-500,
+.card .text-xs.text-slate-500,
+.card .text-\[12px\].text-slate-500,
+.text-\[11px\].text-slate-400,
+.text-\[10px\].text-slate-400{
+  color:#475569 !important;
+}
+
+/* Empty states */
+.empty-state{color:#475569 !important;}
+.empty-state .font-bold,
+.empty-state .font-semibold{color:#0f172a !important;}
+
+/* Badges - stronger contrast */
+.badge{font-weight:700 !important; letter-spacing:0.01em !important;}
+.badge-slate{background:#f1f5f9 !important; color:#1e293b !important; border-color:#cbd5e1 !important;}
+.badge.bg-slate-100{color:#1e293b !important;}
+
+/* Sidebar nav - boost white opacity */
+.nav{color:rgba(255,255,255,0.92) !important;}
+.nav:hover{color:#ffffff !important;}
+#sidebar .text-white\/40{color:rgba(255,255,255,0.78) !important;}
+#sidebar .text-white\/50{color:rgba(255,255,255,0.85) !important;}
+#sidebar .text-white\/60{color:rgba(255,255,255,0.90) !important;}
+#sidebar .text-white\/70{color:rgba(255,255,255,0.93) !important;}
+#sidebar .text-white\/75{color:rgba(255,255,255,0.94) !important;}
+#sidebar .text-white\/80,
+#sidebar .text-white\/85{color:rgba(255,255,255,0.96) !important;}
+#sidebar .text-white\/90{color:#ffffff !important;}
+
+/* Login and dark hero sections - ensure readability */
+#login-screen .text-white\/40{color:rgba(255,255,255,0.70) !important;}
+#login-screen .text-white\/50{color:rgba(255,255,255,0.80) !important;}
+#login-screen .text-white\/60{color:rgba(255,255,255,0.88) !important;}
+#login-screen .text-white\/70{color:rgba(255,255,255,0.92) !important;}
+#login-screen .text-white\/80,
+#login-screen .text-white\/85{color:rgba(255,255,255,0.95) !important;}
+
+/* Dark cards (bg-slate-900) keep white text */
+.bg-slate-900 .text-white{color:#ffffff !important;}
+.bg-slate-900 .text-white\/60{color:rgba(255,255,255,0.88) !important;}
+.bg-slate-900 .text-white\/70{color:rgba(255,255,255,0.92) !important;}
+.bg-slate-900 .text-slate-400{color:#cbd5e1 !important;}
+.bg-slate-900 .text-slate-500{color:#e2e8f0 !important;}
+
+/* Fix: text-white inside light cards should be dark */
+.card:not(.bg-slate-900):not(.bg-slate-950) .text-white:not(.badge):not(button){
+  color:#0f172a !important;
+}
+.card:not(.bg-slate-900) .bg-white\/10,
+.card:not(.bg-slate-900) .bg-white\/\[0\.07\]{
+  background:rgba(241,245,249,0.9) !important;
+  border-color:#e2e8f0 !important;
+}
+
+/* Dashboard hero - ensure secondary text readable */
+.dashboard-hero .text-slate-500{color:#334155 !important;}
+.dashboard-hero .section-label{color:#475569 !important;}
+
+/* Toolbar and filters */
+.pro-toolbar{color:#1e293b !important;}
+.filter-chip{color:#1e293b !important;}
+
+/* Alur and timeline */
+.alur-step{color:#334155 !important;}
+
+/* Modal labels */
+#modal-body label{color:#1e293b !important;}
+#modal-body .text-slate-400{color:#475569 !important;}
+
+/* Buttons in tables - ensure contrast */
+#content table button,
+#content .card button.text-xs{
+  color:#1e293b !important;
+  border-color:#cbd5e1 !important;
+  background:#ffffff !important;
+  font-weight:600 !important;
+}
+#content table button:hover{border-color:#94a3b8 !important; background:#f8fafc !important;}
+#content table button.text-red-600{
+  color:#991b1b !important;
+  background:#fef2f2 !important;
+  border-color:#fecaca !important;
+}
+
+/* Fix any opacity-60 that hides text */
+.text-\[10px\].opacity-60,
+.opacity-60.text-\[10px\]{
+  opacity:0.9 !important;
+}
+
+/* Focus visibility */
+:focus-visible{outline:2px solid #0f172a !important; outline-offset:2px !important;}
+</style>
+
 </head>
 
 <body class="text-slate-800 antialiased">
@@ -432,7 +570,7 @@ select.input{ background-image: linear-gradient(45deg, transparent 50%, #64748b 
       <div class="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-full bg-white/15 border border-white/25 text-[11px] font-semibold text-white backdrop-blur-xl">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> SAKIP • RPJMD 2025-2029 Bridge • Renstra Adaptif • SIPD Integrated
       </div>
-      <h1 class="display text-[42px] leading-[0.92] font-[800] text-white mt-7 tracking-tight">DEWANONE — <span class="bg-gradient-to-r from-sky-200 via-cyan-200 to-emerald-200 bg-clip-text text-transparent">tata kelola dewan</span> dalam satu kendali.</h1>
+      <h1 class="display text-[42px] leading-[0.92] font-[800] text-white mt-7 tracking-tight">DEWANONE — <span class="bg-gradient-to-r from-sky-200 via-cyan-200 to-emerald-200 bg-clip-text text-transparent">Tata Kelola Dewan</span> dalam satu sistem kendali.</h1>
       <p class="text-[15px] leading-[1.65] text-white/90 mt-5">One Platform, One Nexus, One Evidance (Alur bisnis lengkap dari Reses/Pokir hingga APBD.)</p>
       <div class="mt-8 rounded-[20px] bg-white/10 border border-white/20 backdrop-blur-xl p-5">
         <div class="text-[11px] font-bold uppercase tracking-widest text-white/80 mb-3">Alur Bisnis Lengkap 9 Tahap</div>
